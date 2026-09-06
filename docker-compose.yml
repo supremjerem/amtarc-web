@@ -8,8 +8,10 @@ services:
       POSTGRES_USER: amtarc
       POSTGRES_PASSWORD: amtarc
       POSTGRES_DB: amtarc
+    # 5434 on the host: the old Next/Nest repo still runs its own Postgres on 5432
+    # while the two stacks coexist during the rewrite.
     ports:
-      - '5432:5432'
+      - '5434:5432'
     volumes:
       - amtarc_pg_data:/var/lib/postgresql/data
 
