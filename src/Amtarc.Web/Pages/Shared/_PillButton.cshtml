@@ -1,0 +1,6 @@
+@model Amtarc.Web.ViewModels.PillButtonModel
+<a href="@Model.Href"
+   @(Model.External ? Html.Raw("target=\"_blank\" rel=\"noopener\"") : null)
+   class="inline-flex items-center gap-2 rounded-pill px-7 py-3.5 text-[15px] transition-all duration-200 ease-out @Model.VariantClasses">
+    @Model.Label
+</a>

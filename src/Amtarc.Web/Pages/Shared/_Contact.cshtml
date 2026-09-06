@@ -1,0 +1,33 @@
+@using Amtarc.Web.Content
+@model ContactContent
+<section id="contact" class="mb-10 scroll-mt-[96px]">
+    <div class="mx-auto w-full max-w-[1240px] px-[28px]">
+        <div class="reveal relative overflow-hidden rounded-card-lg bg-gold-gradient-card px-6 py-14 sm:px-12 sm:py-18">
+            <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#000000", Opacity = 0.08 }' />
+            <img src="~/img/panther.png" alt="" aria-hidden="true" width="698" height="760" loading="lazy"
+                 class="pointer-events-none absolute right-[-40px] bottom-[-30px] h-[118%] w-auto opacity-[0.16]" />
+            <div class="relative max-w-[640px]">
+                <h2 class="display display-animated display-compressed mb-[18px] text-[clamp(32px,4.6vw,56px)] leading-none text-ink">@Model.Heading</h2>
+                <p class="mb-[34px] max-w-[520px] text-lg leading-[1.55] font-semibold text-ink-on-gold">@Model.Paragraph</p>
+                <div class="mb-[30px] flex flex-wrap items-center gap-3.5">
+                    <a href="mailto:@Model.Email" class="rounded-pill bg-brand px-[30px] py-3.5 text-[15px] font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-brand-black">@Model.Email</a>
+                </div>
+                <div class="mb-11">
+                    <partial name="_SocialLinks" model="SocialLinksVariant.Contact" />
+                </div>
+                <div class="flex flex-wrap gap-x-16 gap-y-6">
+                    @foreach (var block in new[] { Model.Address, Model.Hours })
+                    {
+                        <div>
+                            <div class="mb-2 data-label text-overline-on-gold">@block.Kicker</div>
+                            @foreach (var line in block.Lines)
+                            {
+                                <div class="text-[15px] font-bold text-ink">@line</div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
