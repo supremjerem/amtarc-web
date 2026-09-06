@@ -90,8 +90,11 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
       `Initial` migration reproducing the old Postgres shape (table/column/index/constraint names,
       `timestamp(3)`); startup `Database.Migrate()` + env-driven admin seed; `SlugGenerator` +
       `NewsService.FindPublishedAsync` / `GenerateUniqueSlugAsync`; Testcontainers integration tests
-- [ ] **Phase 3a** — Design-system foundation: port `globals.css`, self-host the 3 fonts, wire the
-      Tailwind + esbuild build, `site.ts` DOM effects, public layout
+- [x] **Phase 3a** — Design-system foundation: `globals.css` ported intact (theme tokens, the three
+      type roles, the `wdth` heading axis); Archivo/Instrument Sans/Martian Mono self-hosted as
+      woff2; Tailwind CLI + esbuild wired into the build via MSBuild (no Node at runtime);
+      `Scripts/site.ts` replaces the `motion` library with five framework-free effects;
+      `_PublicLayout`
 - [ ] **Phase 3b** — The 8 homepage sections + Nav + Footer, copy-identical to the old site
 - [ ] **Phase 4** — Cookie authentication, `/admin` gated, login rate-limited
 - [ ] **Phase 5** — Admin: news CRUD, the four editable content sections, image upload

@@ -1,8 +1,11 @@
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using Amtarc.Web.Data;
 using Amtarc.Web.Data.Interceptors;
 using Amtarc.Web.Domain;
 using Amtarc.Web.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.WebEncoders;
 
 // The schema carried over from Prisma uses `timestamp(3) without time zone`; keep DateTime
 // mapping naive so restored production data and app writes line up. See the rewrite plan, Risk 2.
@@ -11,6 +14,12 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+
+// Razor's default HTML encoder escapes every non-ASCII character to a numeric entity, so a
+// site written in French would render `&#xE9;` for every "é" coming from a Razor expression.
+// The page is UTF-8; let the accented characters through as themselves.
+builder.Services.Configure<WebEncoderOptions>(options =>
+    options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 
 var connectionString = builder.Configuration.GetConnectionString("Amtarc")
     ?? throw new InvalidOperationException("Connection string 'Amtarc' is not configured.");
