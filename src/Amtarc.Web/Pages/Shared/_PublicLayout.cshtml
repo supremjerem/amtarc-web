@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full antialiased">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] is null ? "AMTARC — Club de tir de Chapas, Meauzac" : $"{ViewData["Title"]} — AMTARC")</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "Association meauzacaise de tireurs aux armes rayées et de chasse. Stand de tir de Chapas, Meauzac (Tarn-et-Garonne).")" />
+
+    @* The display face is needed for the first paint of the hero wordmark. *@
+    <link rel="preload" href="~/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="~/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bg-page-gradient text-ink font-body">
+    @RenderBody()
+
+    <script src="~/js/site.js" asp-append-version="true" defer></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

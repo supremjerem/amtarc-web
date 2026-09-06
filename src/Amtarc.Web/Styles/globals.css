@@ -1,0 +1,343 @@
+@import 'tailwindcss';
+
+/*
+ * Tell Tailwind where to look for class names. The stylesheet lives under Styles/, so the
+ * Razor views and the TypeScript sources have to be pointed at explicitly.
+ */
+@source '../Pages/**/*.cshtml';
+@source '../Scripts/**/*.ts';
+
+/*
+ * Self-hosted fonts. The previous site loaded these through next/font; here the woff2 files
+ * are committed under wwwroot/fonts so there is no build-time or runtime fetch.
+ *
+ * Archivo ships the `wdth` axis (62-125) alongside `wght`, and that width axis is what drives
+ * the signature heading animation (.display-compressed 85 -> .display 100). The wght-only
+ * Archivo file would silently kill the effect — keep the wdth variant.
+ */
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-latin.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-latin-ext.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/fonts/instrument-sans-latin.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/fonts/instrument-sans-latin-ext.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Martian Mono';
+  src: url('/fonts/martian-mono-latin.woff2') format('woff2-variations');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Martian Mono';
+  src: url('/fonts/martian-mono-latin-ext.woff2') format('woff2-variations');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* The family names the @theme typography tokens below resolve through. */
+:root {
+  --font-archivo: 'Archivo';
+  --font-instrument-sans: 'Instrument Sans';
+  --font-martian-mono: 'Martian Mono';
+}
+
+@theme {
+  /* Gold / accent */
+  --color-gold: #ffcf1a;
+  --color-gold-light: #ffd21e;
+  --color-gold-dark: #ffb200;
+
+  /* Orange */
+  --color-orange: #ff8a00;
+  --color-orange-500: #ff9500;
+  --color-orange-600: #ff7a00;
+  --color-orange-700: #ff6a00;
+  --color-orange-800: #ff9d00;
+
+  /* Brand black */
+  --color-brand: #16130d;
+  --color-brand-black: #000000;
+
+  /* Text on light backgrounds */
+  --color-ink: #16130d;
+  --color-ink-body: #5a5348;
+  --color-ink-soft: #6a6255;
+  --color-ink-secondary: #4a453b;
+  --color-ink-on-gold: #4a3b12;
+
+  /* Overline / kicker text */
+  --color-overline: #e07b00;
+  --color-overline-on-gold: #7a5a00;
+
+  /* Cream backgrounds */
+  --color-cream-50: #fffdf6;
+  --color-cream-100: #fff7e8;
+  --color-cream-200: #fffaf0;
+  --color-cream-300: #fff0d6;
+  --color-cream-400: #ffe3b0;
+  --color-cream-500: #f4efe4;
+  --color-cream-600: #f0e4cf;
+
+  /* Text on dark backgrounds */
+  --color-on-dark: #a89a7f;
+  --color-on-dark-light: #b7ab93;
+  --color-on-dark-lighter: #d8cbb0;
+  --color-on-dark-muted: #7a6f5c;
+
+  /* Typography */
+  --font-display: var(--font-archivo), sans-serif;
+  --font-body: var(--font-instrument-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-data: var(--font-martian-mono), ui-monospace, monospace;
+
+  /* Radii */
+  --radius-pill: 980px;
+  --radius-card: 20px;
+  --radius-card-lg: 32px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 20px rgba(20, 16, 8, 0.04);
+  --shadow-card-hover: 0 16px 34px rgba(20, 16, 8, 0.1);
+  --shadow-btn-gold: 0 4px 14px rgba(255, 138, 0, 0.35);
+  --shadow-btn-gold-lg: 0 8px 22px rgba(255, 138, 0, 0.35);
+
+  /* Signature gradients */
+  --background-image-gold-gradient: linear-gradient(135deg, #ffcf1a, #ff8a00);
+  --background-image-gold-gradient-card: linear-gradient(150deg, #ffd21e, #ff8a00);
+  --background-image-hero-gradient: linear-gradient(135deg, #ffd21e 0%, #ff9500 55%, #ff6a00 100%);
+  --background-image-page-gradient: linear-gradient(180deg, #ffffff 0%, #fffdf6 60%, #fff7e8 100%);
+  --background-image-tsv-gradient: linear-gradient(160deg, #fffaf0 0%, #fff0d6 55%, #ffe3b0 100%);
+
+  /* Ambient animations (not scroll-driven, safe as pure CSS) */
+  --animate-float: floatY 9s ease-in-out infinite;
+  --animate-bob: bob 1.8s ease-in-out infinite;
+}
+
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 1;
+  }
+}
+
+/* Hero load-in reveal: page-load only, not scroll-driven, so it stays plain CSS. */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-reveal {
+  animation: reveal 0.9s ease both;
+}
+
+/*
+ * Display type — the site's signature.
+ *
+ * Archivo is loaded with its `wdth` axis so headings can arrive compressed and
+ * settle to full width on scroll-in. The end state is always the widest one:
+ * text that fits at wdth 100 can never wrap onto more lines at a narrower
+ * width, so the animation cannot change line count and cannot shift layout.
+ */
+.display {
+  font-family: var(--font-display);
+  font-variation-settings:
+    'wdth' 100,
+    'wght' 700;
+  letter-spacing: -0.022em;
+}
+
+.display-compressed {
+  font-variation-settings:
+    'wdth' 85,
+    'wght' 700;
+}
+
+/* The wordmark holds the widest, heaviest setting on the page. */
+.display-wordmark {
+  font-family: var(--font-display);
+  font-variation-settings:
+    'wdth' 118,
+    'wght' 900;
+  letter-spacing: -0.005em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .display-animated {
+    transition: font-variation-settings 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: font-variation-settings;
+  }
+}
+
+/* Reduced motion: headings render at their final width, no entrance at all. */
+@media (prefers-reduced-motion: reduce) {
+  .display-compressed {
+    font-variation-settings:
+      'wdth' 100,
+      'wght' 700;
+  }
+}
+
+/*
+ * Measured data: start times, capacities, fees, stage counts, IBAN. Martian
+ * Mono is deliberately narrow-tracked here so figures line up in tables.
+ */
+.data-label {
+  font-family: var(--font-data);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.data-figure {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/*
+ * Anchor landing.
+ *
+ * The nav is fixed and 60px tall, so an anchor jump must leave room for it.
+ * What matters is where the section's *content* lands, not its border box, and
+ * sections carry very different top padding — #actus has 96px, #infos 20px,
+ * #contact none. A single `scroll-padding-top` on the container shifts every
+ * section by the same amount, which fixes the shallow ones but leaves the
+ * generous ones with far too much air.
+ *
+ * So each anchor compensates for its own padding instead:
+ *
+ *     scroll-margin-top = 96px - (section's own padding-top)
+ *
+ * 96px puts content ~36px clear of the nav, which is what #actus already does
+ * naturally. Sections padded to 96px or more (#actus, #tsv) need nothing; the
+ * few-pixel shortfall on #club and #annonces is imperceptible and left alone.
+ */
+
+::selection {
+  background: var(--color-gold-dark);
+  color: var(--color-ink);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/*
+ * Scroll-in reveal — the CSS half of the effect the previous site got from the `motion`
+ * library's <Reveal>/<Stagger>. `site.ts` adds `.reveal-in` when the element first crosses
+ * into view; everything else is a transition, so nothing animates before the observer fires.
+ *
+ * Reduced motion keeps the cross-fade and drops the rise, matching the old
+ * MotionConfig reducedMotion="user" behaviour.
+ */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transform: none;
+  }
+}
+
+/*
+ * Fixed nav: transparent over the hero, then a solid bar once the page has scrolled.
+ * `site.ts` toggles `.nav-scrolled` past 24px — the previous site branched on React state.
+ */
+.site-nav {
+  background: rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 350ms ease-in-out,
+    border-color 350ms ease-in-out,
+    box-shadow 350ms ease-in-out;
+}
+
+.site-nav.nav-scrolled {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom-color: rgba(20, 16, 8, 0.08);
+  box-shadow: 0 4px 24px rgba(20, 16, 8, 0.06);
+}
