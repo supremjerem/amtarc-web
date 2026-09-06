@@ -1,0 +1,17 @@
+{
+  "name": "amtarc-web-assets",
+  "private": true,
+  "description": "Build-time front-end toolchain: compiles Tailwind CSS and bundles site.ts. Not a runtime dependency.",
+  "scripts": {
+    "build:css": "tailwindcss -i Styles/globals.css -o wwwroot/css/site.css --minify",
+    "build:js": "esbuild Scripts/site.ts --bundle --minify --format=iife --target=es2020 --outfile=wwwroot/js/site.js",
+    "build": "npm run build:css && npm run build:js",
+    "watch:css": "tailwindcss -i Styles/globals.css -o wwwroot/css/site.css --watch",
+    "watch:js": "esbuild Scripts/site.ts --bundle --format=iife --target=es2020 --outfile=wwwroot/js/site.js --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}
