@@ -14,7 +14,7 @@ public sealed class AmtarcDbContextFactory : IDesignTimeDbContextFactory<AmtarcD
     public AmtarcDbContext CreateDbContext(string[] args)
     {
         var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Amtarc")
-            ?? "Host=localhost;Port=5432;Database=amtarc;Username=amtarc;Password=amtarc";
+            ?? "Host=localhost;Port=5434;Database=amtarc;Username=amtarc;Password=amtarc";
 
         var options = new DbContextOptionsBuilder<AmtarcDbContext>()
             .UseNpgsql(connectionString, npgsql => npgsql.MapEnum<NewsCategory>("NewsCategory"))

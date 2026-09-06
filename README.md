@@ -73,6 +73,11 @@ The public page is served from an output cache tagged `news` + `content`; admin 
 tags — there is no cross-service cache-bust webhook. Startup validates configuration and refuses to
 boot on missing/short/placeholder secrets.
 
+Significant decisions are recorded as ADRs in [`docs/adr/`](docs/adr):
+
+- [0001 — Rewrite the site as a single ASP.NET Core app](docs/adr/0001-rewrite-in-aspnet-core.md)
+- [0002 — Cookie authentication for the single admin account](docs/adr/0002-cookie-auth-for-the-single-admin.md)
+
 ## Roadmap
 
 Seeded from the rewrite plan. One PR per phase into `develop`.
@@ -98,6 +103,16 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
 - [ ] **Phase 9** — Data migration from the old production database (news + editable content +
       uploads)
 - [ ] **Phase 10** — Staging deploy, parity check against the live site, Traefik cutover
+
+Tracked deviations from the project standards, to close later:
+
+- [ ] **Coverage floor in CI** — coverage is collected and uploaded, but the build does not yet fail
+      below a threshold. Lands with Phase 7, once there is enough behaviour to set a meaningful bar.
+- [ ] **Observability** — logging is structured via `ILogger`, but there are no metrics or tracing
+      yet. Worth an OpenTelemetry pass once the app is deployed.
+- **Branch protection requires 0 approving reviews** (CI must still pass, `main` takes no direct
+  pushes). Deliberate: this is a single-maintainer repo and GitHub forbids approving your own pull
+  request, so requiring one review would block every merge. Revisit if a second maintainer joins.
 
 ## Development workflow
 
