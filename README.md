@@ -81,8 +81,10 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
       parity with the old PostCSS build; Archivo variable font ships the `wdth` axis
 - [x] **Phase 1** — New repo, solution scaffold, CI (format + build + test + coverage), CodeQL,
       Dependabot, branch protection
-- [ ] **Phase 2** — EF data layer: `News`, `SiteContent`, `Admin`; baseline migration matching the
-      old Postgres shape; startup migrate + admin seed
+- [x] **Phase 2** — EF data layer: `News`, `SiteContent`, `Admin` + the `NewsCategory` PG enum;
+      `Initial` migration reproducing the old Postgres shape (table/column/index/constraint names,
+      `timestamp(3)`); startup `Database.Migrate()` + env-driven admin seed; `SlugGenerator` +
+      `NewsService.FindPublishedAsync` / `GenerateUniqueSlugAsync`; Testcontainers integration tests
 - [ ] **Phase 3a** — Design-system foundation: port `globals.css`, self-host the 3 fonts, wire the
       Tailwind + esbuild build, `site.ts` DOM effects, public layout
 - [ ] **Phase 3b** — The 8 homepage sections + Nav + Footer, copy-identical to the old site

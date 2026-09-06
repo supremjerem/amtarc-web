@@ -17,24 +17,6 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: amtarc
-          POSTGRES_PASSWORD: amtarc
-          POSTGRES_DB: amtarc
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U amtarc"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-
-    env:
-      ConnectionStrings__Amtarc: Host=localhost;Port=5432;Database=amtarc;Username=amtarc;Password=amtarc
-
     steps:
       - uses: actions/checkout@v4
 
@@ -53,6 +35,8 @@ jobs:
       - name: Build
         run: dotnet build -c Release --no-restore
 
+      # Integration tests spin their own PostgreSQL via Testcontainers; the ubuntu
+      # runner already has Docker available.
       - name: Test
         run: >-
           dotnet test -c Release --no-build

@@ -44,6 +44,10 @@ dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
 dotnet_sort_system_directives_first = true
 csharp_using_directive_placement = outside_namespace:error
 
+# CA1848 (use LoggerMessage delegates) is a hot-path micro-optimisation; not worth the
+# ceremony for a low-traffic club site. Structured logging is still expected.
+dotnet_diagnostic.CA1848.severity = none
+
 # Naming: private fields _camelCase
 dotnet_naming_rule.private_fields_underscore.symbols = private_fields
 dotnet_naming_rule.private_fields_underscore.style = underscore_prefix
@@ -54,9 +58,19 @@ dotnet_naming_style.underscore_prefix.capitalization = camel_case
 dotnet_naming_style.underscore_prefix.required_prefix = _
 
 # ---------------------------------------------------------------------------
+# EF Core migrations are generated code — don't hold them to the hand-written style.
+# ---------------------------------------------------------------------------
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_diagnostic.IDE0161.severity = none
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.IDE0058.severity = none
+
+# ---------------------------------------------------------------------------
 # Test project — behaviour-describing method names use underscores by design
 # (Method_Scenario_ExpectedResult), per the project testing standard.
 # ---------------------------------------------------------------------------
 [tests/**/*.cs]
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1861.severity = none  # constant arrays as arguments — fine in tests
+dotnet_diagnostic.CA1711.severity = none  # xUnit [CollectionDefinition] classes end in "Collection"
