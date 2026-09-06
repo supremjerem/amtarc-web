@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: amtarc
+          POSTGRES_PASSWORD: amtarc
+          POSTGRES_DB: amtarc
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U amtarc"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      ConnectionStrings__Amtarc: Host=localhost;Port=5432;Database=amtarc;Username=amtarc;Password=amtarc
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore
+        run: dotnet restore --locked-mode
+
+      - name: Format check
+        run: dotnet format --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Test
+        run: >-
+          dotnet test -c Release --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory TestResults
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: TestResults/**/coverage.cobertura.xml
+          retention-days: 14
+          if-no-files-found: warn

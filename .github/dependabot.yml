@@ -1,0 +1,32 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: daily
+    target-branch: develop
+    open-pull-requests-limit: 10
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: develop
+
+  # The front-end build toolchain (Tailwind CLI + esbuild) — added in a later phase
+  # once src/Amtarc.Web/package.json exists.
+  - package-ecosystem: npm
+    directory: /src/Amtarc.Web
+    schedule:
+      interval: weekly
+    target-branch: develop
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
