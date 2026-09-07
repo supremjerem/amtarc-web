@@ -1,0 +1,47 @@
+@page "/admin/login"
+@model Amtarc.Web.Pages.Admin.LoginModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Connexion";
+}
+
+<div class="mx-auto max-w-md">
+    <h1 class="font-display text-3xl font-extrabold tracking-tight">Connexion</h1>
+    <p class="mt-2 text-sm text-ink-body">Espace réservé à l'administration du site.</p>
+
+    @if (Model.LockedOut)
+    {
+        <p role="alert"
+           class="mt-6 rounded-lg border border-orange-700/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-700">
+            Trop de tentatives de connexion. Réessayez dans quelques minutes.
+        </p>
+    }
+
+    <form method="post" class="mt-6 flex flex-col gap-4">
+        <div asp-validation-summary="ModelOnly" role="alert"
+             class="empty:hidden rounded-lg border border-orange-700/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-700"></div>
+
+        <label class="flex flex-col gap-1.5">
+            <span class="font-data text-[0.7rem] font-medium uppercase tracking-[0.15em] text-ink-soft">
+                Adresse e-mail
+            </span>
+            <input asp-for="Input.Email" type="email" autocomplete="username" required
+                   class="rounded-lg border border-ink/15 bg-cream-50 px-4 py-2.5 text-ink outline-none focus:border-gold focus:ring-2 focus:ring-gold/40" />
+            <span asp-validation-for="Input.Email" class="text-xs text-orange-700"></span>
+        </label>
+
+        <label class="flex flex-col gap-1.5">
+            <span class="font-data text-[0.7rem] font-medium uppercase tracking-[0.15em] text-ink-soft">
+                Mot de passe
+            </span>
+            <input asp-for="Input.Password" type="password" autocomplete="current-password" required
+                   class="rounded-lg border border-ink/15 bg-cream-50 px-4 py-2.5 text-ink outline-none focus:border-gold focus:ring-2 focus:ring-gold/40" />
+            <span asp-validation-for="Input.Password" class="text-xs text-orange-700"></span>
+        </label>
+
+        <button type="submit"
+                class="mt-2 rounded-full bg-brand px-6 py-3 font-display text-sm font-bold uppercase tracking-[0.1em] text-gold transition hover:bg-brand-black">
+            Se connecter
+        </button>
+    </form>
+</div>
