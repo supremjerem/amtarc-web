@@ -11,6 +11,13 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      # FluentAssertions 8.0 moved to a paid licence for commercial use; 7.x stays MIT.
+      # Stay on the 7.x line — patches and minors within it are still picked up.
+      # Revisit only if the licence changes or we swap the assertion library.
+      - dependency-name: FluentAssertions
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
