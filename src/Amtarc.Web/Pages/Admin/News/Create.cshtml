@@ -1,0 +1,27 @@
+@page "/admin/news/create"
+@model Amtarc.Web.Pages.Admin.News.CreateModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Nouvelle actualité";
+}
+
+<partial name="_AdminNav" />
+
+<h1 class="font-display text-3xl font-extrabold tracking-tight">Nouvelle actualité</h1>
+
+<form method="post" enctype="multipart/form-data" class="mt-8 flex max-w-2xl flex-col gap-5">
+    <div asp-validation-summary="ModelOnly" role="alert"
+         class="empty:hidden rounded-lg border border-orange-700/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-700"></div>
+
+    <partial name="_NewsForm" for="Input" />
+
+    <div class="flex items-center gap-4">
+        <button type="submit"
+                class="rounded-full bg-gold-gradient px-6 py-3 text-sm font-extrabold text-ink transition hover:brightness-105">
+            Créer
+        </button>
+        <a href="/admin/news" class="text-sm font-semibold text-ink-soft hover:text-ink hover:underline">
+            Annuler
+        </a>
+    </div>
+</form>

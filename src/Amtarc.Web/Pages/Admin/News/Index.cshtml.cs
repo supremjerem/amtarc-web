@@ -1,12 +1,25 @@
-using System.Security.Claims;
+using Amtarc.Web.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amtarc.Web.Pages.Admin.News;
 
-public class IndexModel : PageModel
+public class IndexModel(INewsService news) : PageModel
 {
-    public string AdminEmail { get; private set; } = string.Empty;
+    public IReadOnlyList<Web.Domain.News> Items { get; private set; } = [];
 
-    public void OnGet() =>
-        AdminEmail = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+    [TempData]
+    public string? StatusMessage { get; set; }
+
+    public async Task OnGetAsync(CancellationToken cancellationToken) =>
+        Items = await news.FindAllAsync(cancellationToken);
+
+    public async Task<IActionResult> OnPostDeleteAsync(string id, CancellationToken cancellationToken)
+    {
+        StatusMessage = await news.DeleteAsync(id, cancellationToken)
+            ? "Actualité supprimée."
+            : "Cette actualité n'existe plus.";
+
+        return RedirectToPage();
+    }
 }

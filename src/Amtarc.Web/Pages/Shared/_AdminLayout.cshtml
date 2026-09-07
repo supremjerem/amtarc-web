@@ -38,6 +38,8 @@
         @RenderBody()
     </main>
 
+    @* Only the confirm prompts matter here; the scroll effects find nothing to attach to. *@
+    <script src="~/js/site.js" asp-append-version="true" defer></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

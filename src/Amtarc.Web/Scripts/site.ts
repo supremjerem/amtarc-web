@@ -146,12 +146,29 @@ function initMobileMenu(): void {
   });
 }
 
+/**
+ * Asks before submitting a form that carries `data-confirm` — the delete and reset actions in the
+ * back-office. Purely an enhancement: without JavaScript those forms still work, unprompted.
+ */
+function initConfirmPrompts(): void {
+  document.addEventListener('submit', (event) => {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement)) return;
+
+    const message = form.dataset.confirm;
+    if (message && !window.confirm(message)) {
+      event.preventDefault();
+    }
+  });
+}
+
 function init(): void {
   initHeadingWidthMorph();
   initScrollReveals();
   initCountUp();
   initNavOnScroll();
   initMobileMenu();
+  initConfirmPrompts();
 }
 
 if (document.readyState === 'loading') {

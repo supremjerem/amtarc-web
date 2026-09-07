@@ -1,0 +1,35 @@
+@page "/admin/news/{id}"
+@model Amtarc.Web.Pages.Admin.News.EditModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Modifier une actualité";
+}
+
+<partial name="_AdminNav" />
+
+<h1 class="font-display text-3xl font-extrabold tracking-tight">Modifier l'actualité</h1>
+<p class="mt-2 font-data text-xs text-ink-soft">Adresse publique : /@Model.Slug</p>
+
+<form method="post" enctype="multipart/form-data" class="mt-8 flex max-w-2xl flex-col gap-5">
+    <div asp-validation-summary="ModelOnly" role="alert"
+         class="empty:hidden rounded-lg border border-orange-700/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-700"></div>
+
+    <partial name="_NewsForm" for="Input" />
+
+    <div class="flex flex-wrap items-center gap-4">
+        <button type="submit"
+                class="rounded-full bg-gold-gradient px-6 py-3 text-sm font-extrabold text-ink transition hover:brightness-105">
+            Enregistrer
+        </button>
+        <a href="/admin/news" class="text-sm font-semibold text-ink-soft hover:text-ink hover:underline">
+            Annuler
+        </a>
+    </div>
+</form>
+
+<form method="post" asp-page-handler="Delete" class="mt-10 border-t border-ink/10 pt-6"
+      data-confirm="Supprimer cette actualité ? Cette action est définitive.">
+    <button type="submit" class="text-sm font-semibold text-orange-700 hover:underline">
+        Supprimer cette actualité
+    </button>
+</form>

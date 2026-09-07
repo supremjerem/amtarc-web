@@ -1,0 +1,9 @@
+@model string
+@* Confirmation banner carried across a redirect-after-post. Renders nothing when there is none. *@
+@if (!string.IsNullOrEmpty(Model))
+{
+    <p role="status"
+       class="mt-6 rounded-lg border border-gold-dark/30 bg-gold/15 px-4 py-3 text-sm font-semibold text-ink-on-gold">
+        @Model
+    </p>
+}
