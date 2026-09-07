@@ -28,7 +28,7 @@ jobs:
 
       # Node is a build-time tool only: the project's MSBuild target runs `npm ci` and then
       # compiles Tailwind + bundles site.ts into wwwroot. Nothing Node-related ships at runtime.
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
