@@ -1,0 +1,31 @@
+@page "/admin/content"
+@model Amtarc.Web.Pages.Admin.Content.IndexModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Contenu du site";
+}
+
+<partial name="_AdminNav" />
+
+<h1 class="font-display text-3xl font-extrabold tracking-tight">Contenu du site</h1>
+<p class="mt-2 text-sm text-ink-body">
+    Les sections de la page d'accueil dont le texte se modifie ici. Tout le reste vient du site.
+</p>
+
+<partial name="_AdminStatus" model="Model.StatusMessage" />
+
+<ul class="mt-8 flex flex-col gap-3">
+    @foreach (var entry in Model.Sections)
+    {
+        <li>
+            <a href="/admin/content/@entry.Key"
+               class="flex items-center justify-between gap-4 rounded-xl border border-ink/10 bg-cream-50 px-4 py-3 transition hover:border-gold-dark/40">
+                <span class="min-w-0">
+                    <span class="block font-semibold text-ink">@entry.Title</span>
+                    <span class="mt-1 block text-sm text-ink-soft">@entry.Description</span>
+                </span>
+                <span class="shrink-0 text-sm font-semibold text-overline">Modifier</span>
+            </a>
+        </li>
+    }
+</ul>

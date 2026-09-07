@@ -1,0 +1,14 @@
+@{
+    var current = ViewContext.RouteData.Values["page"]?.ToString() ?? string.Empty;
+    var onNews = current.StartsWith("/Admin/News", StringComparison.Ordinal);
+    const string BaseClass = "rounded-full px-4 py-1.5 text-sm font-semibold transition";
+    const string ActiveClass = "bg-brand text-gold";
+    const string IdleClass = "text-ink-soft hover:bg-ink/5 hover:text-ink";
+}
+
+<nav class="mb-8 flex gap-2" aria-label="Sections d'administration">
+    <a href="/admin/news" class="@BaseClass @(onNews ? ActiveClass : IdleClass)"
+       aria-current="@(onNews ? "page" : null)">Actualités</a>
+    <a href="/admin/content" class="@BaseClass @(onNews ? IdleClass : ActiveClass)"
+       aria-current="@(onNews ? null : "page")">Contenu du site</a>
+</nav>
