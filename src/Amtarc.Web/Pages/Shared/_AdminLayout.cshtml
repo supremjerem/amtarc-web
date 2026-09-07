@@ -1,0 +1,43 @@
+@*
+    The back-office chrome. Deliberately plainer than the public layout: same palette and faces,
+    none of the scroll effects, and no link back into the marketing page's anchors.
+*@
+<!DOCTYPE html>
+<html lang="fr" class="h-full antialiased">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>@(ViewData["Title"] is null ? "Administration — AMTARC" : $"{ViewData["Title"]} — Administration AMTARC")</title>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="min-h-full bg-cream-500 text-ink font-body">
+    <header class="border-b border-ink/10 bg-brand text-cream-100">
+        <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
+            <a href="/" class="font-display text-lg font-extrabold tracking-tight text-gold">
+                AMTARC
+                <span class="ml-2 font-data text-[0.65rem] font-medium uppercase tracking-[0.2em] text-on-dark">
+                    Administration
+                </span>
+            </a>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form method="post" asp-page="/Admin/Logout">
+                    <button type="submit"
+                            class="rounded-full border border-on-dark-muted px-4 py-1.5 text-sm font-medium text-on-dark-lighter transition hover:border-gold hover:text-gold">
+                        Se déconnecter
+                    </button>
+                </form>
+            }
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-6 py-10">
+        @RenderBody()
+    </main>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

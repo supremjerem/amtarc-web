@@ -1,5 +1,6 @@
 using Amtarc.Web.Data;
 using Amtarc.Web.Domain;
+using Amtarc.Web.Security;
 using Microsoft.EntityFrameworkCore;
 
 namespace Amtarc.Web.Services;
@@ -13,6 +14,7 @@ namespace Amtarc.Web.Services;
 /// </summary>
 public sealed class AdminSeeder(
     AmtarcDbContext db,
+    IAdminPasswordHasher hasher,
     IConfiguration configuration,
     ILogger<AdminSeeder> logger)
 {
@@ -27,7 +29,7 @@ public sealed class AdminSeeder(
             return;
         }
 
-        var hash = BCrypt.Net.BCrypt.HashPassword(password, workFactor: 10);
+        var hash = hasher.Hash(password);
         var admin = await db.Admins.SingleOrDefaultAsync(a => a.Email == email, cancellationToken);
 
         if (admin is null)

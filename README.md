@@ -98,7 +98,10 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
 - [x] **Phase 3b** — `content.ts` ported to C# records (`Content/`); the eight homepage sections,
       Nav and Footer as Razor partials; `SiteContentService` deep-merges an admin's stored JSON
       over the defaults; dev-only news seeder
-- [ ] **Phase 4** — Cookie authentication, `/admin` gated, login rate-limited
+- [x] **Phase 4** — Cookie authentication (`amtarc_admin`, httpOnly/Secure/SameSite=Lax, session +
+      7-day sliding ticket); the `AdminOnly` policy gates the whole `/Admin` folder; bcrypt via
+      `AdminPasswordHasher`; login throttled per IP with a lockout message distinct from a bad
+      password
 - [ ] **Phase 5** — Admin: news CRUD, the four editable content sections, image upload
 - [ ] **Phase 6** — OutputCache + tag eviction, rate limiting, security headers, options validation
       (refuse to boot on bad secrets)
