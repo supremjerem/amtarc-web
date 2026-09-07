@@ -1,0 +1,46 @@
+@using Amtarc.Web.Content
+@model AnnouncementsContent
+<section id="annonces" class="pt-[88px] pb-5">
+    <div class="mx-auto w-full max-w-[1240px] px-[28px]">
+        <div class="reveal mb-8 flex flex-wrap items-end justify-between gap-6">
+            <div>
+                <partial name="_SectionKicker" model="Model.Kicker" />
+                <h2 class="display display-animated display-compressed text-[clamp(30px,4vw,46px)] leading-[1.02]">@Model.Heading</h2>
+            </div>
+            <a href="@Model.MoreLink.Href" class="text-sm font-bold whitespace-nowrap text-ink-body transition-colors hover:text-overline">@Model.MoreLink.Label</a>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3" data-stagger="50">
+            <div class="reveal relative overflow-hidden rounded-[24px] bg-gold-gradient-card p-9 md:col-span-2">
+                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#000000", Opacity = 0.09 }' />
+                <div class="relative">
+                    <div class="mb-[18px] inline-block rounded-pill bg-brand px-3 py-[5px] data-label text-gold">@Model.MedicalCertificate.Badge</div>
+                    <h3 class="mb-2.5 display text-[27px] text-ink">@Model.MedicalCertificate.Title</h3>
+                    <p class="mb-[22px] max-w-[520px] text-[15.5px] leading-[1.55] font-semibold text-ink-on-gold">@Model.MedicalCertificate.Body</p>
+                    <a href="@Model.MedicalCertificate.Cta.Href" class="inline-flex items-center gap-2 rounded-pill bg-brand px-5 py-[11px] text-sm font-bold text-white transition-colors hover:bg-brand-black">@Model.MedicalCertificate.Cta.Label</a>
+                </div>
+            </div>
+
+            @foreach (var card in new[] { Model.Membership, Model.Merch })
+            {
+                <div class="reveal flex flex-col justify-between rounded-[24px] border border-ink/10 bg-white p-[34px] shadow-card">
+                    <div>
+                        <div class="mb-4 data-label text-on-dark">@card.Kicker</div>
+                        <h3 class="mb-2.5 display text-[22px]">@card.Title</h3>
+                        <p class="text-sm leading-[1.55] text-ink-soft">@card.Body</p>
+                    </div>
+                    <a href="@card.Cta.Href" class="mt-[22px] text-sm font-extrabold text-overline transition-colors hover:text-orange">@card.Cta.Label</a>
+                </div>
+            }
+
+            <div class="reveal flex items-center gap-5 rounded-[20px] bg-brand px-7 py-5 md:col-span-3">
+                <span class="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-gold-gradient text-xl font-extrabold text-ink" aria-hidden="true">&#9993;</span>
+                <div class="flex-1">
+                    <div class="text-base font-extrabold text-white">@Model.Newsletter.Title</div>
+                    <div class="text-sm text-on-dark">@Model.Newsletter.Body</div>
+                </div>
+                <a href="@Model.Newsletter.Cta.Href" class="shrink-0 rounded-pill border border-white/25 px-[18px] py-2.5 text-[13.5px] font-bold text-white transition-colors hover:bg-white/10">@Model.Newsletter.Cta.Label</a>
+            </div>
+        </div>
+    </div>
+</section>

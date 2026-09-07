@@ -30,7 +30,9 @@ builder.Services.AddDbContext<AmtarcDbContext>(options =>
         .AddInterceptors(new UpdatedAtInterceptor()));
 
 builder.Services.AddScoped<INewsService, NewsService>();
+builder.Services.AddScoped<ISiteContentService, SiteContentService>();
 builder.Services.AddScoped<AdminSeeder>();
+builder.Services.AddScoped<NewsSeeder>();
 
 var app = builder.Build();
 
@@ -58,6 +60,13 @@ static async Task MigrateAndSeedAsync(WebApplication app)
     var db = scope.ServiceProvider.GetRequiredService<AmtarcDbContext>();
     await db.Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<AdminSeeder>().SeedAsync();
+
+    // Sample news outside production only — a fresh checkout should have a populated home page,
+    // but the live site's news is real content.
+    if (!app.Environment.IsProduction())
+    {
+        await scope.ServiceProvider.GetRequiredService<NewsSeeder>().SeedAsync();
+    }
 }
 
 // Exposed so the test project can drive the app with WebApplicationFactory.

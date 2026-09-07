@@ -1,0 +1,71 @@
+@using Amtarc.Web.Content
+<section id="disciplines" class="scroll-mt-[46px] pt-[50px] pb-24">
+    <div class="mx-auto w-full max-w-[1240px] px-[28px]">
+        <div class="reveal mb-8">
+            <partial name="_SectionKicker" model="SiteContentDefaults.DisciplinesHeading.Kicker" />
+            <h2 class="display display-animated display-compressed text-[clamp(30px,4vw,50px)] leading-[1.02]">@SiteContentDefaults.DisciplinesHeading.Heading</h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 [grid-auto-rows:minmax(150px,auto)] md:grid-cols-4" data-stagger="40">
+            @foreach (var card in SiteContentDefaults.Disciplines)
+            {
+                var span = card.Size switch
+                {
+                    DisciplineSize.Hero => "col-span-2 row-span-2",
+                    DisciplineSize.Wide => "col-span-2",
+                    DisciplineSize.Full => "col-span-2 md:col-span-3",
+                    _ => "",
+                };
+                <div class="reveal h-full @span">
+                    @switch (card.Size)
+                    {
+                        case DisciplineSize.Hero:
+                            <a href="@(card.Href ?? "#")" class="group relative flex h-full flex-col justify-between overflow-hidden rounded-[26px] bg-gold-gradient-card p-9 text-ink transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0_20px_40px_rgba(255,138,0,0.35)]">
+                                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#000000", Opacity = 0.08 }' />
+                                <div class="relative">
+                                    <div class="mb-5 inline-block rounded-pill bg-brand px-3 py-[5px] data-label text-gold">@card.Badge</div>
+                                    <h3 class="mb-3 display text-[34px]">@card.Title</h3>
+                                    <p class="max-w-[380px] text-[15.5px] leading-[1.55] font-semibold text-ink-on-gold">@card.Body</p>
+                                </div>
+                                <div class="relative text-[14.5px] font-extrabold">@card.Cta</div>
+                            </a>
+                            break;
+
+                        case DisciplineSize.Full:
+                            <div class="relative flex h-full items-center justify-between gap-6 overflow-hidden rounded-[26px] bg-brand p-8 transition-transform duration-200 hover:-translate-y-0.5">
+                                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#ffb200", Opacity = 0.12 }' />
+                                <div class="relative">
+                                    <div class="mb-2 data-label text-gold">@card.Overline</div>
+                                    <h3 class="mb-1.5 display text-[26px] text-white">@card.Title</h3>
+                                    <p class="max-w-[520px] text-sm leading-[1.55] text-on-dark-light">@card.Body</p>
+                                </div>
+                                <span class="relative shrink-0 text-[44px]" aria-hidden="true">@card.Emoji</span>
+                            </div>
+                            break;
+
+                        case DisciplineSize.Wide:
+                            <div class="flex h-full items-center justify-between gap-5 rounded-[26px] border border-ink/10 bg-white px-[30px] py-7 shadow-card transition-colors hover:border-orange/50">
+                                <div>
+                                    <div class="mb-2 data-label text-overline">@card.Overline</div>
+                                    <h3 class="mb-1.5 display text-2xl">@card.Title</h3>
+                                    <p class="max-w-[340px] text-[13.5px] leading-[1.5] text-ink-soft">@card.Body</p>
+                                </div>
+                                <div class="data-figure text-[48px] text-cream-600">@card.BigLabel</div>
+                            </div>
+                            break;
+
+                        default:
+                            <div class="flex h-full flex-col justify-between rounded-[26px] border border-ink/10 bg-white p-7 shadow-card transition-colors hover:border-orange/50">
+                                <div class="data-label text-overline">@card.Overline</div>
+                                <div>
+                                    <h3 class="mb-1.5 display text-2xl">@card.Title</h3>
+                                    <p class="text-[13.5px] leading-[1.5] text-ink-soft">@card.Body</p>
+                                </div>
+                            </div>
+                            break;
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>

@@ -1,0 +1,46 @@
+@using Amtarc.Web.Content
+@using Amtarc.Web.Domain
+@model IReadOnlyList<News>
+@{
+    string CategoryLabel(NewsCategory c) => c switch
+    {
+        NewsCategory.Concours => "CONCOURS",
+        NewsCategory.Travaux => "TRAVAUX",
+        _ => "ÉVÉNEMENT",
+    };
+}
+<section id="actus" class="scroll-mt-[0px] pt-24 pb-24">
+    <div class="mx-auto w-full max-w-[1240px] px-[28px]">
+        <div class="reveal mb-8">
+            <partial name="_SectionKicker" model="SiteContentDefaults.NewsHeading.Kicker" />
+            <h2 class="display display-animated display-compressed text-[clamp(30px,4vw,50px)] leading-[1.02]">@SiteContentDefaults.NewsHeading.Heading</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3" data-stagger="70">
+            @foreach (var item in Model)
+            {
+                <article class="reveal overflow-hidden rounded-card border border-ink/10 bg-white shadow-card">
+                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                    {
+                        <img src="@item.ImageUrl" alt="" class="h-[190px] w-full object-cover" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div class="relative flex h-[190px] items-center justify-center overflow-hidden bg-cream-200">
+                            <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#ff9d00", Opacity = 0.14 }' />
+                            <span class="relative text-[13px] font-semibold text-ink-soft">Photo à venir</span>
+                        </div>
+                    }
+                    <div class="p-7">
+                        <div class="mb-2.5 data-label text-overline">@CategoryLabel(item.Category)</div>
+                        <h3 class="mb-2 display text-[21px] leading-[1.2]">@item.Title</h3>
+                        @if (!string.IsNullOrWhiteSpace(item.Excerpt))
+                        {
+                            <p class="text-sm leading-[1.55] text-ink-soft">@item.Excerpt</p>
+                        }
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+</section>

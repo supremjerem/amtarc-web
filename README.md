@@ -95,7 +95,9 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
       woff2; Tailwind CLI + esbuild wired into the build via MSBuild (no Node at runtime);
       `Scripts/site.ts` replaces the `motion` library with five framework-free effects;
       `_PublicLayout`
-- [ ] **Phase 3b** — The 8 homepage sections + Nav + Footer, copy-identical to the old site
+- [x] **Phase 3b** — `content.ts` ported to C# records (`Content/`); the eight homepage sections,
+      Nav and Footer as Razor partials; `SiteContentService` deep-merges an admin's stored JSON
+      over the defaults; dev-only news seeder
 - [ ] **Phase 4** — Cookie authentication, `/admin` gated, login rate-limited
 - [ ] **Phase 5** — Admin: news CRUD, the four editable content sections, image upload
 - [ ] **Phase 6** — OutputCache + tag eviction, rate limiting, security headers, options validation

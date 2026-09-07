@@ -1,0 +1,31 @@
+@using Amtarc.Web.Content
+@model SocialLinksVariant
+@{
+    var isContact = Model == SocialLinksVariant.Contact;
+    var pastille = isContact
+        ? "flex h-[50px] w-[50px] items-center justify-center rounded-full bg-brand transition-transform duration-200 ease-out hover:-translate-y-[3px] hover:bg-brand-black"
+        : "flex h-[42px] w-[42px] items-center justify-center rounded-full bg-gold-gradient transition-transform duration-200 ease-out hover:-translate-y-[3px] hover:brightness-[1.06]";
+    var iconColor = isContact ? "#ffcf1a" : "#16130d";
+    var holeColor = isContact ? "#16130d" : "#ffcf1a";
+    var size = isContact ? 22 : 19;
+}
+<div class="flex flex-wrap items-center gap-3">
+    @foreach (var social in SiteContentDefaults.SocialLinks)
+    {
+        @if (social.ComingSoon)
+        {
+            <span class="@pastille cursor-not-allowed opacity-70" aria-disabled="true"
+                  aria-label="@social.Label" title="@(social.Label) (bientôt)">
+                @await Html.PartialAsync("_SocialIcon", (social.Platform, iconColor, holeColor, size))
+            </span>
+        }
+        else
+        {
+            <a href="@social.Href"
+               @(social.External ? Html.Raw("target=\"_blank\" rel=\"noopener\"") : null)
+               aria-label="@social.Label" title="@social.Label" class="@pastille">
+                @await Html.PartialAsync("_SocialIcon", (social.Platform, iconColor, holeColor, size))
+            </a>
+        }
+    }
+</div>

@@ -1,0 +1,43 @@
+@using Amtarc.Web.Content
+@{ var tsv = SiteContentDefaults.TsvShowcase; }
+<section id="tsv" class="relative overflow-hidden bg-tsv-gradient py-26">
+    <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#ff8a00", Opacity = 0.14 }' />
+    <div class="relative mx-auto w-full max-w-[1240px] px-[28px]">
+        <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            <div class="reveal">
+                <div class="mb-[22px] inline-flex items-center gap-[9px] rounded-pill bg-brand px-3.5 py-1.5 data-label text-gold">@tsv.Badge</div>
+                <h2 class="display display-animated display-compressed mb-[22px] whitespace-pre-line text-[clamp(34px,4.6vw,58px)] leading-none">@tsv.Heading</h2>
+                @for (var i = 0; i < tsv.Paragraphs.Count; i++)
+                {
+                    <p class="@(i == 0 ? "mb-5 max-w-[520px] text-[17.5px] leading-[1.62] font-medium text-[#5a4a2a]" : "mb-8 max-w-[520px] text-base leading-[1.62] font-medium text-[#7a6a48]")">@tsv.Paragraphs[i]</p>
+                }
+                <div class="mb-[34px] flex flex-wrap gap-5">
+                    @for (var i = 0; i < tsv.Stats.Count; i++)
+                    {
+                        <div class="flex items-center gap-5">
+                            @if (i > 0)
+                            {
+                                <div class="h-9 w-px bg-ink/15"></div>
+                            }
+                            <div>
+                                <div class="data-figure text-[26px] text-ink">@tsv.Stats[i].Value</div>
+                                <div class="text-[12.5px] font-bold text-[#8a744a]">@tsv.Stats[i].Label</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="flex flex-wrap gap-3.5">
+                    <partial name="_PillButton" model='new PillButtonModel { Href = tsv.CtaPrimary.Href, Label = tsv.CtaPrimary.Label, Variant = PillButtonVariant.Dark }' />
+                    <partial name="_PillButton" model='new PillButtonModel { Href = tsv.CtaSecondary.Href, Label = tsv.CtaSecondary.Label, Variant = PillButtonVariant.Outline }' />
+                </div>
+            </div>
+
+            <div class="reveal relative flex items-center justify-center">
+                <div class="absolute h-[min(94%,460px)] w-[min(94%,460px)] rounded-full bg-[radial-gradient(circle,rgba(255,138,0,0.4),rgba(255,138,0,0)_68%)]"></div>
+                <img src="~/img/amtarc-logo.png" alt="AMTARC — panthère, pistolet, croix occitane et écusson IPSC"
+                     width="1400" height="793"
+                     class="relative h-auto w-[min(96%,620px)] drop-shadow-[0_24px_42px_rgba(20,16,8,0.32)]" />
+            </div>
+        </div>
+    </div>
+</section>
