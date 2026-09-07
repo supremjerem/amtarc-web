@@ -1,0 +1,17 @@
+@page "/admin/news"
+@model Amtarc.Web.Pages.Admin.News.IndexModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Actualités";
+}
+
+<h1 class="font-display text-3xl font-extrabold tracking-tight">Actualités</h1>
+<p class="mt-2 text-sm text-ink-body">
+    Connecté en tant que <strong class="font-semibold text-ink">@Model.AdminEmail</strong>.
+</p>
+
+@* Placeholder landing screen: the news list and its create/edit/delete forms land in the next
+   phase. It exists now so the sign-in redirect has a real destination behind the AdminOnly policy. *@
+<p class="mt-8 rounded-lg border border-ink/10 bg-cream-50 px-4 py-3 text-sm text-ink-soft">
+    La gestion des actualités arrive dans la prochaine étape.
+</p>

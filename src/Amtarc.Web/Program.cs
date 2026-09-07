@@ -3,6 +3,7 @@ using System.Text.Unicode;
 using Amtarc.Web.Data;
 using Amtarc.Web.Data.Interceptors;
 using Amtarc.Web.Domain;
+using Amtarc.Web.Security;
 using Amtarc.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.WebEncoders;
@@ -13,7 +14,16 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    // Everything under /Admin needs the admin cookie; the two pages that get you one cannot.
+    options.Conventions.AuthorizeFolder("/Admin", AuthenticationSetup.AdminOnlyPolicy);
+    options.Conventions.AllowAnonymousToPage("/Admin/Login");
+    options.Conventions.AllowAnonymousToPage("/Admin/Logout");
+});
+
+builder.Services.AddAdminAuthentication(builder.Environment);
+builder.Services.AddLoginRateLimiter(builder.Configuration);
 
 // Razor's default HTML encoder escapes every non-ASCII character to a numeric entity, so a
 // site written in French would render `&#xE9;` for every "é" coming from a Razor expression.
@@ -29,6 +39,8 @@ builder.Services.AddDbContext<AmtarcDbContext>(options =>
         .UseNpgsql(connectionString, npgsql => npgsql.MapEnum<NewsCategory>("NewsCategory"))
         .AddInterceptors(new UpdatedAtInterceptor()));
 
+builder.Services.AddSingleton<IAdminPasswordHasher, AdminPasswordHasher>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<ISiteContentService, SiteContentService>();
 builder.Services.AddScoped<AdminSeeder>();
@@ -46,6 +58,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseRateLimiter();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
