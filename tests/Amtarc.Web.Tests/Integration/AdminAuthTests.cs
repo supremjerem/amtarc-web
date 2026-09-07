@@ -60,7 +60,7 @@ public sealed class AdminAuthTests(AmtarcWebFactory factory)
         var response = await client.GetAsync("/admin/news");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await response.Content.ReadAsStringAsync()).Should().Contain(AmtarcWebFactory.AdminEmail);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("Se déconnecter");
     }
 
     [Theory]

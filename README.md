@@ -102,7 +102,10 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
       7-day sliding ticket); the `AdminOnly` policy gates the whole `/Admin` folder; bcrypt via
       `AdminPasswordHasher`; login throttled per IP with a lockout message distinct from a bad
       password
-- [ ] **Phase 5** — Admin: news CRUD, the four editable content sections, image upload
+- [x] **Phase 5** — Back-office: news create/edit/delete with unique-slug generation, the four
+      editable content sections driven by a ported field config (text / textarea / lines /
+      schedule rows, all working without JavaScript), per-section reset to the defaults, and image
+      upload validated by magic bytes and served from outside `wwwroot`
 - [ ] **Phase 6** — OutputCache + tag eviction, rate limiting, security headers, options validation
       (refuse to boot on bad secrets)
 - [ ] **Phase 7** — Test consolidation + coverage floor in CI

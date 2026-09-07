@@ -46,6 +46,15 @@ public static partial class LoginClient
         var response = await SignInAsync(client, AmtarcWebFactory.AdminEmail, AmtarcWebFactory.AdminPassword);
 
         response.StatusCode.Should().Be(HttpStatusCode.Found, "the seeded credentials must sign in");
+
+        // Assert on the cookie, not just the redirect: a throttled attempt also answers 302, and
+        // without this check the helper would hand back an anonymous client that fails much later
+        // as a puzzling authorization error.
+        response.Headers.TryGetValues("Set-Cookie", out var cookies);
+        (cookies ?? []).Should().Contain(
+            c => c.StartsWith("amtarc_admin=", StringComparison.Ordinal),
+            "signing in must issue the session cookie");
+
         return client;
     }
 

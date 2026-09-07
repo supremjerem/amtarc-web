@@ -5,13 +5,57 @@
     ViewData["Title"] = "Actualités";
 }
 
-<h1 class="font-display text-3xl font-extrabold tracking-tight">Actualités</h1>
-<p class="mt-2 text-sm text-ink-body">
-    Connecté en tant que <strong class="font-semibold text-ink">@Model.AdminEmail</strong>.
-</p>
+<partial name="_AdminNav" />
 
-@* Placeholder landing screen: the news list and its create/edit/delete forms land in the next
-   phase. It exists now so the sign-in redirect has a real destination behind the AdminOnly policy. *@
-<p class="mt-8 rounded-lg border border-ink/10 bg-cream-50 px-4 py-3 text-sm text-ink-soft">
-    La gestion des actualités arrive dans la prochaine étape.
-</p>
+<div class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="font-display text-3xl font-extrabold tracking-tight">Actualités</h1>
+    <a href="/admin/news/create"
+       class="rounded-full bg-gold-gradient px-5 py-2.5 text-sm font-extrabold text-ink transition hover:brightness-105">
+        Nouvelle actualité
+    </a>
+</div>
+
+<partial name="_AdminStatus" model="Model.StatusMessage" />
+
+@if (Model.Items.Count == 0)
+{
+    <p class="mt-8 rounded-lg border border-ink/10 bg-cream-50 px-4 py-3 text-sm text-ink-soft">
+        Aucune actualité pour le moment.
+    </p>
+}
+else
+{
+    <ul class="mt-8 flex flex-col gap-3">
+        @foreach (var item in Model.Items)
+        {
+            <li class="flex flex-wrap items-center gap-4 rounded-xl border border-ink/10 bg-cream-50 px-4 py-3">
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-semibold text-ink">@item.Title</span>
+                        @if (!item.Published)
+                        {
+                            <span class="rounded-full bg-ink/10 px-2 py-0.5 font-data text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-ink-soft">
+                                Brouillon
+                            </span>
+                        }
+                    </div>
+                    <p class="mt-1 font-data text-xs text-ink-soft">
+                        @item.Category · /@item.Slug
+                    </p>
+                </div>
+
+                <a href="/admin/news/@item.Id"
+                   class="text-sm font-semibold text-overline underline-offset-4 hover:underline">
+                    Modifier
+                </a>
+
+                <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id"
+                      data-confirm="Supprimer « @item.Title » ?">
+                    <button type="submit" class="text-sm font-semibold text-orange-700 hover:underline">
+                        Supprimer
+                    </button>
+                </form>
+            </li>
+        }
+    </ul>
+}

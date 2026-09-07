@@ -1,0 +1,89 @@
+@page "/admin/content/{key}"
+@model Amtarc.Web.Pages.Admin.Content.EditModel
+@using Amtarc.Web.Content
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = Model.Section.Title;
+
+    const string FieldClass = "w-full rounded-lg border border-ink/15 bg-cream-50 px-3 py-2 text-sm text-ink outline-none focus:border-gold focus:ring-2 focus:ring-gold/40";
+    const string LabelClass = "mb-1.5 block text-sm font-semibold text-ink-secondary";
+}
+
+<partial name="_AdminNav" />
+
+<h1 class="font-display text-3xl font-extrabold tracking-tight">@Model.Section.Title</h1>
+<p class="mt-2 text-sm text-ink-body">@Model.Section.Description</p>
+
+<form method="post" class="mt-8 flex max-w-2xl flex-col gap-5">
+    @foreach (var field in Model.Section.Fields)
+    {
+        switch (field.Type)
+        {
+            case FieldType.Hours:
+                <fieldset>
+                    <legend class="@LabelClass">@field.Label</legend>
+                    <div class="flex flex-col gap-2">
+                        @foreach (var (index, row) in Model.RowsFor(field.Path))
+                        {
+                            <div class="flex items-center gap-2">
+                                <input type="hidden" name="HourRows[@index].Path" value="@row.Path" />
+                                <input name="HourRows[@index].Day" value="@row.Day"
+                                       aria-label="Jour @(index + 1)" class="@FieldClass" />
+                                <input name="HourRows[@index].Time" value="@row.Time"
+                                       aria-label="Heures @(index + 1)" class="@FieldClass" />
+                                <button type="submit" asp-page-handler="RemoveRow" asp-route-index="@index"
+                                        aria-label="Supprimer la ligne @(index + 1)"
+                                        class="shrink-0 px-2 text-sm font-semibold text-orange-700 hover:underline">
+                                    ✕
+                                </button>
+                            </div>
+                        }
+                        <button type="submit" asp-page-handler="AddRow" asp-route-path="@field.Path"
+                                class="self-start text-sm font-semibold text-overline hover:underline">
+                            + Ajouter une ligne
+                        </button>
+                    </div>
+                </fieldset>
+                break;
+
+            case FieldType.Lines:
+                <label class="block">
+                    <span class="@LabelClass">@field.Label</span>
+                    <textarea name="Fields[@field.Path]" rows="5" class="@FieldClass">@Model.Fields.GetValueOrDefault(field.Path)</textarea>
+                </label>
+                break;
+
+            case FieldType.Textarea:
+                <label class="block">
+                    <span class="@LabelClass">@field.Label</span>
+                    <textarea name="Fields[@field.Path]" rows="3" class="@FieldClass">@Model.Fields.GetValueOrDefault(field.Path)</textarea>
+                </label>
+                break;
+
+            default:
+                <label class="block">
+                    <span class="@LabelClass">@field.Label</span>
+                    <input name="Fields[@field.Path]" value="@Model.Fields.GetValueOrDefault(field.Path)"
+                           class="@FieldClass" />
+                </label>
+                break;
+        }
+    }
+
+    <div class="flex flex-wrap items-center gap-4">
+        <button type="submit"
+                class="rounded-full bg-gold-gradient px-6 py-3 text-sm font-extrabold text-ink transition hover:brightness-105">
+            Enregistrer
+        </button>
+        <a href="/admin/content" class="text-sm font-semibold text-ink-soft hover:text-ink hover:underline">
+            Annuler
+        </a>
+    </div>
+</form>
+
+<form method="post" asp-page-handler="Reset" class="mt-10 border-t border-ink/10 pt-6"
+      data-confirm="Réinitialiser « @Model.Section.Title » ? Le texte saisi ici sera supprimé et la section reprendra le contenu par défaut du site.">
+    <button type="submit" class="text-sm font-semibold text-ink-soft hover:text-ink hover:underline">
+        Réinitialiser au contenu par défaut
+    </button>
+</form>
