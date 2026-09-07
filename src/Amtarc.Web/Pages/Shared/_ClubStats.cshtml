@@ -1,0 +1,47 @@
+@using Amtarc.Web.Content
+<section id="club" class="py-[90px]">
+    <div class="mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-13 px-[28px] lg:grid-cols-[1.1fr_1fr]">
+        <div class="reveal">
+            <partial name="_SectionKicker" model="SiteContentDefaults.ClubIntro.Kicker" />
+            <h2 class="display display-animated display-compressed mb-[22px] whitespace-pre-line text-[clamp(30px,4vw,50px)] leading-[1.04]">@SiteContentDefaults.ClubIntro.Heading</h2>
+            <p class="mb-[26px] max-w-[520px] text-[17px] leading-[1.6] text-ink-body">@SiteContentDefaults.ClubIntro.Paragraph</p>
+            <div class="flex flex-wrap gap-3">
+                @foreach (var feature in SiteContentDefaults.ClubIntro.Features)
+                {
+                    <div class="flex items-center gap-[9px] rounded-pill border border-ink/10 bg-white px-4 py-2 text-[14.5px] font-semibold text-ink-secondary">
+                        <span class="text-orange" aria-hidden="true">&#9670;</span> @feature
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="reveal grid grid-cols-2 gap-4" data-stagger="60">
+            @foreach (var stat in SiteContentDefaults.ClubStats)
+            {
+                var card = stat.Variant switch
+                {
+                    StatVariant.Gold => "bg-gold-gradient-card",
+                    StatVariant.Dark => "bg-brand",
+                    _ => "border border-ink/10 bg-white shadow-card",
+                };
+                var number = stat.Variant switch
+                {
+                    StatVariant.Dark => "bg-gold-gradient bg-clip-text text-transparent",
+                    _ => "text-ink",
+                };
+                var label = stat.Variant switch
+                {
+                    StatVariant.Gold => "text-ink-on-gold font-extrabold",
+                    StatVariant.Dark => "text-on-dark",
+                    _ => "text-ink-soft",
+                };
+                <div class="rounded-card p-[26px] @card">
+                    <div class="data-figure text-[46px] leading-none @number">
+                        <span data-count-to="@stat.Value">0</span>@if (stat.Suffix is not null) { <span class="text-2xl text-on-dark">@stat.Suffix</span> }
+                    </div>
+                    <div class="mt-1.5 text-sm font-bold @label">@stat.Label</div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

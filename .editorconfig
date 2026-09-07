@@ -44,9 +44,11 @@ dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
 dotnet_sort_system_directives_first = true
 csharp_using_directive_placement = outside_namespace:error
 
-# CA1848 (use LoggerMessage delegates) is a hot-path micro-optimisation; not worth the
-# ceremony for a low-traffic club site. Structured logging is still expected.
+# CA1848 (use LoggerMessage delegates) and CA1873 (guard argument evaluation behind IsEnabled)
+# are hot-path logging micro-optimisations. This app logs at startup and on admin actions, so
+# the ceremony buys nothing. Structured logging is still expected.
 dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1873.severity = none
 
 # Naming: private fields _camelCase
 dotnet_naming_rule.private_fields_underscore.symbols = private_fields
