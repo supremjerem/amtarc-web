@@ -67,6 +67,10 @@ while working on the page locally.
 - `dotnet test -c Release` — run the xUnit suite with coverage
 - `dotnet format` — apply the `.editorconfig` style rules (`--verify-no-changes` to check)
 - `dotnet ef migrations add <Name> --project src/Amtarc.Web` — add a schema migration
+- `scripts/check-coverage.sh` — enforce the coverage floor against the last `dotnet test` run
+
+The suite is **167 tests** at ~96% line / ~80% branch coverage. CI fails below 92% / 75%; raise the
+floor in `scripts/check-coverage.sh` when coverage rises, never lower it to make a build pass.
 
 ## Architecture
 
@@ -80,6 +84,35 @@ and `WebApplicationFactory` integration tests.
 The public page is served from an output cache tagged `news` + `content`; admin writes evict those
 tags — there is no cross-service cache-bust webhook. Startup validates configuration and refuses to
 boot on missing/short/placeholder secrets.
+
+## Deployment
+
+One image, built by a three-stage `Dockerfile`: a `node:22-alpine` stage compiles the CSS and
+bundles the TypeScript, a `sdk:10.0` stage publishes the app and produces an EF **migrations
+bundle**, and the `aspnet:10.0` runtime stage carries neither Node nor the SDK and runs as a
+non-root user. `docker/entrypoint.sh` applies migrations with the bundle before starting the app,
+so a schema change that cannot be applied stops the deploy instead of leaving the app running
+against a database it does not match.
+
+```bash
+docker build -t amtarc-site .
+docker compose -f docker-compose.prod.yml config    # validate before deploying
+```
+
+On the VPS, next to `docker-compose.prod.yml`:
+
+```bash
+cp .env.prod.example .env    # .env — `docker compose` does not auto-load `.env.prod`
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Images publish to `ghcr.io/<owner>/amtarc-site` — deliberately **not** `amtarc-web`, which is what
+the old Next.js repo publishes and what the currently-live stack pulls.
+
+Three volumes matter: `amtarc_site_db_data` (Postgres), `amtarc_uploads` (images), and
+`amtarc_site_keys` (the data-protection key ring). Losing the last one signs the admin out and
+invalidates every in-flight form on redeploy, so it is not optional.
 
 Significant decisions are recorded as ADRs in [`docs/adr/`](docs/adr):
 
@@ -120,17 +153,17 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
       what gets throttled behind Traefik; security headers with a CSP that needs no
       `unsafe-inline`; and options validated at startup, so the app refuses to boot on a weak or
       placeholder secret
-- [ ] **Phase 7** — Test consolidation + coverage floor in CI
-- [ ] **Phase 8** — Dockerfile (Node build stage → .NET publish → aspnet runtime), production
-      `docker-compose.yml`, GHCR publish pipeline
+- [x] **Phase 7** — Coverage floor enforced in CI (`scripts/check-coverage.sh`), plus the tests
+      that closed the gaps it exposed
+- [x] **Phase 8** — Three-stage Dockerfile (Node assets → .NET publish + EF migrations bundle →
+      `aspnet` runtime as a non-root user), production `docker-compose.prod.yml` behind Traefik,
+      and the GHCR publish pipeline gated on CI being green on `main`
 - [ ] **Phase 9** — Data migration from the old production database (news + editable content +
       uploads)
 - [ ] **Phase 10** — Staging deploy, parity check against the live site, Traefik cutover
 
 Tracked deviations from the project standards, to close later:
 
-- [ ] **Coverage floor in CI** — coverage is collected and uploaded, but the build does not yet fail
-      below a threshold. Lands with Phase 7, once there is enough behaviour to set a meaningful bar.
 - [ ] **Observability** — logging is structured via `ILogger`, but there are no metrics or tracing
       yet. Worth an OpenTelemetry pass once the app is deployed.
 - **Branch protection requires 0 approving reviews** (CI must still pass, `main` takes no direct

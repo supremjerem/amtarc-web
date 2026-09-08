@@ -1,0 +1,82 @@
+# Production stack — deploy to the VPS. Local development uses docker-compose.yml, which only
+# runs PostgreSQL.
+#
+# Server layout: this file lives in ~/apps/live/amtarc-site/ next to a `.env` (never committed)
+# supplying the variables below. Traefik already runs in ~/apps/tools/traefik/ and owns the
+# external `web` network.
+#
+# Note the file name: `docker compose` only auto-loads `.env`, not `.env.prod`. Copying the
+# settings to `.env.prod` and nothing else is how the previous stack booted with a blank
+# environment and crash-looped.
+#
+#   cp .env.prod.example .env   # then fill it in
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# The image is built and pushed to GHCR by .github/workflows/docker-publish.yml after CI is green
+# on main. Set IMAGE_TAG in .env to pin a specific build; it defaults to latest.
+
+services:
+  app:
+    image: ghcr.io/supremjerem/amtarc-site:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - web
+      - amtarc-internal
+    environment:
+      ConnectionStrings__Amtarc: Host=postgres;Port=5432;Database=amtarc;Username=amtarc;Password=${POSTGRES_PASSWORD}
+      Admin__Email: ${ADMIN_EMAIL}
+      Admin__Password: ${ADMIN_PASSWORD}
+      # One hop: Traefik. The rate limiter and the logs need the real client address.
+      Security__TrustProxyHops: 1
+      Security__PublicCacheSeconds: ${PUBLIC_CACHE_SECONDS:-300}
+      ASPNETCORE_ENVIRONMENT: Production
+    volumes:
+      - amtarc_uploads:/app/uploads
+      # The data-protection key ring. Without it every redeploy issues new keys, which signs the
+      # admin out and breaks any form that was already open.
+      - amtarc_site_keys:/app/keys
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - 'traefik.enable=true'
+      # Required: the app sits on both `web` (Traefik) and `amtarc-internal` (Postgres). Without
+      # this, Traefik's docker provider can pick the amtarc-internal address, which it cannot
+      # reach, and every request hangs until it 504s. This cost a production outage once.
+      - 'traefik.docker.network=web'
+      - 'traefik.http.routers.amtarc-site.rule=Host(`${DOMAIN}`)'
+      - 'traefik.http.routers.amtarc-site.entrypoints=websecure'
+      - 'traefik.http.routers.amtarc-site.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.amtarc-site.loadbalancer.server.port=8080'
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    # Never on the `web` network: the database has no business being reachable from outside.
+    networks:
+      - amtarc-internal
+    environment:
+      POSTGRES_USER: amtarc
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: amtarc
+    volumes:
+      - amtarc_site_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U amtarc']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  web:
+    external: true
+  amtarc-internal:
+    driver: bridge
+
+volumes:
+  # Distinct names from the old stack's amtarc_db_data / amtarc_api_uploads: both stacks coexist
+  # on this VPS until the cutover, and the old volumes are the rollback path.
+  amtarc_site_db_data:
+  amtarc_uploads:
+  amtarc_site_keys:

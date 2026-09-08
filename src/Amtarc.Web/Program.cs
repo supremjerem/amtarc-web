@@ -7,6 +7,7 @@ using Amtarc.Web.Infrastructure;
 using Amtarc.Web.Options;
 using Amtarc.Web.Security;
 using Amtarc.Web.Services;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,20 @@ builder.Services.AddOptions<SecurityOptions>()
 
 var security = builder.Configuration.GetSection(SecurityOptions.SectionName).Get<SecurityOptions>()
     ?? new SecurityOptions();
+
+// Data-protection keys sign the admin session cookie and the anti-forgery tokens. Left at the
+// default they live inside the container, so every redeploy generates a new ring: the admin is
+// silently signed out and any open form fails to submit. Persist them wherever the deployment
+// gives us somewhere durable.
+var keyRing = builder.Configuration["DataProtection:KeyRing"];
+if (!string.IsNullOrWhiteSpace(keyRing))
+{
+    Directory.CreateDirectory(keyRing);
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(keyRing))
+        // Fixed, so the ring stays readable if the content root ever moves.
+        .SetApplicationName("amtarc-site");
+}
 
 builder.Services.AddAdminAuthentication(builder.Environment);
 builder.Services.AddAmtarcRateLimiter(security);
@@ -153,10 +168,17 @@ static void MapUploads(WebApplication app)
 
 static async Task MigrateAndSeedAsync(WebApplication app)
 {
-    // TODO(phase-8): wrap in a Postgres advisory lock once more than one instance can start.
     await using var scope = app.Services.CreateAsyncScope();
-    var db = scope.ServiceProvider.GetRequiredService<AmtarcDbContext>();
-    await db.Database.MigrateAsync();
+
+    // In the container the entrypoint has already run the migrations bundle, so a schema change
+    // that cannot be applied stops the deploy rather than leaving an app running against a
+    // database it does not match. Locally there is no entrypoint, so the app does it itself.
+    if (app.Configuration.GetValue("Database:MigrateOnStartup", true))
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AmtarcDbContext>();
+        await db.Database.MigrateAsync();
+    }
+
     await scope.ServiceProvider.GetRequiredService<AdminSeeder>().SeedAsync();
 
     // Sample news outside production only — a fresh checkout should have a populated home page,
