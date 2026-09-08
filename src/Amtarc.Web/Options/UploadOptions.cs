@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Amtarc.Web.Options;
 
 /// <summary>
@@ -13,9 +15,12 @@ public sealed class UploadOptions
     /// are data, and a directory the static-file middleware serves wholesale is a place where a
     /// file that slips past validation becomes reachable.
     /// </summary>
+    [Required(ErrorMessage = "Upload:Directory is required.")]
     public string Directory { get; set; } = "App_Data/uploads";
 
     /// <summary>5 MiB, the limit the previous site enforced.</summary>
+    [Range(1024, 100L * 1024 * 1024,
+        ErrorMessage = "Upload:MaxBytes must be between 1 KiB and 100 MiB.")]
     public long MaxBytes { get; set; } = 5 * 1024 * 1024;
 
     /// <summary>

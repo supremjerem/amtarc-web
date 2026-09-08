@@ -1,35 +1,31 @@
 @using Amtarc.Web.Content
 @model HeroContent
 <header id="top" class="relative flex min-h-screen items-center overflow-hidden pt-24 pb-10">
-    <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#ff9d00", Opacity = 0.09 }' />
+    <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#ff9d00", OpacityClass = "opacity-[0.09]" }' />
     <div class="pointer-events-none absolute -right-[120px] -bottom-[160px] h-[640px] w-[640px] rounded-full bg-[radial-gradient(circle,rgba(255,175,0,0.35),rgba(255,175,0,0)_66%)]"></div>
 
     <div class="relative z-[2] mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-8 px-[28px] md:grid-cols-[1.15fr_0.85fr]">
         <div>
-            <div class="animate-reveal data-label mb-6 inline-flex items-center gap-[9px] rounded-pill border border-ink/[0.14] bg-white/70 px-[15px] py-[7px] text-ink-soft"
-                 style="animation-delay:50ms">
+            <div class="animate-reveal data-label mb-6 inline-flex items-center gap-[9px] rounded-pill border border-ink/[0.14] bg-white/70 px-[15px] py-[7px] text-ink-soft [animation-delay:50ms]">
                 <span class="h-[7px] w-[7px] rounded-[2px] bg-gold-gradient"></span>
                 @Model.Badge
             </div>
 
-            <div class="animate-reveal display-wordmark mb-[18px] bg-hero-gradient bg-clip-text text-[clamp(60px,11vw,142px)] leading-[0.84] text-transparent [-webkit-text-stroke:2px_rgba(20,16,8,0.82)] drop-shadow-[0_6px_14px_rgba(255,138,0,0.25)]"
-                 style="animation-delay:120ms">
+            <div class="animate-reveal display-wordmark mb-[18px] bg-hero-gradient bg-clip-text text-[clamp(60px,11vw,142px)] leading-[0.84] text-transparent [-webkit-text-stroke:2px_rgba(20,16,8,0.82)] drop-shadow-[0_6px_14px_rgba(255,138,0,0.25)] [animation-delay:120ms]">
                 @Model.Wordmark
             </div>
 
-            <h1 class="animate-reveal display mb-5 whitespace-pre-line text-[clamp(26px,3.4vw,42px)] leading-[1.05]"
-                style="animation-delay:200ms">@Model.Title</h1>
+            <h1 class="animate-reveal display mb-5 whitespace-pre-line text-[clamp(26px,3.4vw,42px)] leading-[1.05] [animation-delay:200ms]">@Model.Title</h1>
 
-            <p class="animate-reveal mb-[34px] max-w-[500px] text-[clamp(16px,1.7vw,19px)] leading-[1.55] font-medium text-ink-body"
-               style="animation-delay:280ms">@Model.Paragraph</p>
+            <p class="animate-reveal mb-[34px] max-w-[500px] text-[clamp(16px,1.7vw,19px)] leading-[1.55] font-medium text-ink-body [animation-delay:280ms]">@Model.Paragraph</p>
 
-            <div class="animate-reveal flex flex-wrap gap-3.5" style="animation-delay:360ms">
+            <div class="animate-reveal flex flex-wrap gap-3.5 [animation-delay:360ms]">
                 <partial name="_PillButton" model='new PillButtonModel { Href = Model.CtaPrimary.Href, Label = Model.CtaPrimary.Label, Variant = PillButtonVariant.GoldLarge }' />
                 <partial name="_PillButton" model='new PillButtonModel { Href = Model.CtaSecondary.Href, Label = Model.CtaSecondary.Label, Variant = PillButtonVariant.Dark }' />
             </div>
         </div>
 
-        <div class="animate-reveal relative flex items-center justify-center" style="animation-delay:200ms">
+        <div class="animate-reveal relative flex items-center justify-center [animation-delay:200ms]">
             <img src="~/img/panther.png" alt="Panthère AMTARC" width="698" height="760" fetchpriority="high"
                  class="relative h-auto w-[min(88%,420px)] drop-shadow-[0_26px_44px_rgba(20,16,8,0.4)]" />
         </div>

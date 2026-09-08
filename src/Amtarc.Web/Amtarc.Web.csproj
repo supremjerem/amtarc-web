@@ -39,10 +39,12 @@
     <Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
-  <!-- node_modules is a build-time artefact; keep it out of the content glob and off publish. -->
+  <!-- The Node toolchain is build-time only: none of it belongs in the published output or the
+       runtime image, and node_modules has to stay out of the content glob entirely. -->
   <ItemGroup>
     <Content Remove="node_modules/**" />
     <None Remove="node_modules/**" />
+    <Content Update="package.json;package-lock.json;tsconfig.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
 </Project>

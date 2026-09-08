@@ -1,46 +1,43 @@
 using Amtarc.Web.Data;
 using Amtarc.Web.Domain;
+using Amtarc.Web.Options;
 using Amtarc.Web.Security;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Amtarc.Web.Services;
 
 /// <summary>
 /// Ensures the single back-office account exists and its password hash matches
-/// <c>Admin:Password</c>. Runs on every startup, so rotating the password is: change the
-/// config value and restart. Parity with the previous <c>prisma/seed.ts</c> behaviour.
-/// Full "refuse to boot on a missing / weak password" validation arrives with the Options
-/// hardening phase; here a missing value is simply skipped.
+/// <see cref="AdminOptions.Password"/>. Runs on every startup, so rotating the password is:
+/// change the config value and restart. Parity with the previous <c>prisma/seed.ts</c>.
+/// The options are validated at startup, so by the time this runs the values are known good.
 /// </summary>
 public sealed class AdminSeeder(
     AmtarcDbContext db,
     IAdminPasswordHasher hasher,
-    IConfiguration configuration,
+    IOptions<AdminOptions> options,
     ILogger<AdminSeeder> logger)
 {
+    private readonly AdminOptions _options = options.Value;
+
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        var email = configuration["Admin:Email"];
-        var password = configuration["Admin:Password"];
-
-        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-        {
-            logger.LogWarning("Admin:Email / Admin:Password not configured — skipping admin seed.");
-            return;
-        }
-
-        var hash = hasher.Hash(password);
-        var admin = await db.Admins.SingleOrDefaultAsync(a => a.Email == email, cancellationToken);
+        var hash = hasher.Hash(_options.Password);
+        var admin = await db.Admins
+            .SingleOrDefaultAsync(a => a.Email == _options.Email, cancellationToken);
 
         if (admin is null)
         {
             db.Admins.Add(new Admin
             {
                 Id = Guid.NewGuid().ToString(),
-                Email = email,
+                Email = _options.Email,
                 PasswordHash = hash,
-                Name = "Admin AMTARC",
+                Name = _options.DisplayName,
             });
+
+            logger.LogInformation("Created the admin account for {Email}.", _options.Email);
         }
         else
         {

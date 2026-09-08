@@ -40,7 +40,8 @@ public static partial class LoginClient
     }
 
     /// <summary>A client already carrying a valid admin session cookie.</summary>
-    public static async Task<HttpClient> CreateAuthenticatedClientAsync(AmtarcWebFactory factory)
+    public static async Task<HttpClient> CreateAuthenticatedClientAsync(
+        WebApplicationFactory<Program> factory)
     {
         var client = CreateClient(factory);
         var response = await SignInAsync(client, AmtarcWebFactory.AdminEmail, AmtarcWebFactory.AdminPassword);

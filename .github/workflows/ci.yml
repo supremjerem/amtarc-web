@@ -51,6 +51,9 @@ jobs:
           --collect:"XPlat Code Coverage"
           --results-directory TestResults
 
+      - name: Coverage floor
+        run: ./scripts/check-coverage.sh TestResults
+
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v7

@@ -4,7 +4,14 @@ namespace Amtarc.Web.ViewModels;
 public sealed record HexagonPatternModel
 {
     public string Color { get; init; } = "#ff9d00";
-    public double Opacity { get; init; } = 0.09;
+
+    /// <summary>
+    /// The texture's opacity as a Tailwind class rather than an inline style, so the
+    /// content-security policy can forbid inline styles outright. Call sites pass a literal so
+    /// Tailwind's scanner finds the class.
+    /// </summary>
+    public string OpacityClass { get; init; } = "opacity-[0.09]";
+
     public string CssClass { get; init; } = "absolute inset-0 h-full w-full pointer-events-none";
 }
 

@@ -1,6 +1,8 @@
 using Amtarc.Web.Domain;
+using Amtarc.Web.Infrastructure;
 using Amtarc.Web.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Amtarc.Web.Pages;
 
@@ -9,6 +11,7 @@ namespace Amtarc.Web.Pages;
 /// Editable copy comes from <see cref="ISiteContentService"/> (stored JSON merged over the
 /// built-in defaults); the rest is code-only content.
 /// </summary>
+[OutputCache(PolicyName = OutputCacheSetup.PublicPagePolicy)]
 public class IndexModel(ISiteContentService siteContent, INewsService news) : PageModel
 {
     public SiteContent Sections { get; private set; } = null!;

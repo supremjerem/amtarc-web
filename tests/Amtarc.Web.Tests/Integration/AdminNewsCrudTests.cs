@@ -173,6 +173,35 @@ public sealed class AdminNewsCrudTests(AmtarcWebFactory factory)
     }
 
     [Fact]
+    public async Task Delete_FromTheEditScreen_RemovesTheItemToo()
+    {
+        var client = await LoginClient.CreateAuthenticatedClientAsync(_factory);
+        var title = $"Supprimé depuis l'édition {Guid.NewGuid():N}";
+        await AdminForm.PostAsync(client, "/admin/news/create", ValidItem(title));
+        var item = await FindByTitleAsync(title);
+
+        var response = await AdminForm.PostAsync(
+            client, $"/admin/news/{item.Id}?handler=Delete", new Dictionary<string, string>(),
+            formPath: $"/admin/news/{item.Id}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Found);
+        LoginClient.RedirectTarget(response).Should().Be("/admin/news");
+        (await client.GetStringAsync("/admin/news")).Should().NotContain(title);
+    }
+
+    [Fact]
+    public async Task Edit_ReturnsNotFound_WhenTheItemDisappearsBeforeTheFormIsSubmitted()
+    {
+        var client = await LoginClient.CreateAuthenticatedClientAsync(_factory);
+
+        var response = await AdminForm.PostAsync(
+            client, $"/admin/news/{Guid.NewGuid()}", ValidItem("Déjà supprimée"),
+            formPath: "/admin/news/create");
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task Write_WithoutAnAntiForgeryToken_IsRejected()
     {
         var client = await LoginClient.CreateAuthenticatedClientAsync(_factory);

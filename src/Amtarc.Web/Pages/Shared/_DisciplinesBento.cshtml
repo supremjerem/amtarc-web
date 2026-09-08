@@ -21,7 +21,7 @@
                     {
                         case DisciplineSize.Hero:
                             <a href="@(card.Href ?? "#")" class="group relative flex h-full flex-col justify-between overflow-hidden rounded-[26px] bg-gold-gradient-card p-9 text-ink transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0_20px_40px_rgba(255,138,0,0.35)]">
-                                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#000000", Opacity = 0.08 }' />
+                                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#000000", OpacityClass = "opacity-[0.08]" }' />
                                 <div class="relative">
                                     <div class="mb-5 inline-block rounded-pill bg-brand px-3 py-[5px] data-label text-gold">@card.Badge</div>
                                     <h3 class="mb-3 display text-[34px]">@card.Title</h3>
@@ -33,7 +33,7 @@
 
                         case DisciplineSize.Full:
                             <div class="relative flex h-full items-center justify-between gap-6 overflow-hidden rounded-[26px] bg-brand p-8 transition-transform duration-200 hover:-translate-y-0.5">
-                                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#ffb200", Opacity = 0.12 }' />
+                                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#ffb200", OpacityClass = "opacity-[0.12]" }' />
                                 <div class="relative">
                                     <div class="mb-2 data-label text-gold">@card.Overline</div>
                                     <h3 class="mb-1.5 display text-[26px] text-white">@card.Title</h3>

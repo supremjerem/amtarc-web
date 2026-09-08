@@ -224,6 +224,28 @@ public sealed class AdminContentTests(AmtarcWebFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task AStoredSectionOfTheWrongShape_FallsBackToTheDefaults_RatherThanTakingThePageDown()
+    {
+        // Syntactically broken JSON cannot get in — the column is jsonb and Postgres rejects it.
+        // What *can* get in is valid JSON that is not the object the section expects, and the
+        // public site has to keep serving rather than 500 on every visit.
+        await using (var scope = _factory.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<Web.Data.AmtarcDbContext>();
+            db.SiteContent.Add(new Web.Domain.SiteContentEntry
+            {
+                Key = SectionKey.Hero,
+                Data = """["une", "liste", "au lieu d'un objet"]""",
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var publicPage = await _factory.CreateClient().GetStringAsync("/");
+
+        publicPage.Should().Contain(SiteContentDefaults.Hero.Badge);
+    }
+
+    [Fact]
     public async Task Reset_HandsTheSectionBackToTheBuiltInDefaults()
     {
         var client = await LoginClient.CreateAuthenticatedClientAsync(_factory);

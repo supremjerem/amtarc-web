@@ -1,0 +1,35 @@
+# Build context hygiene: everything below is either rebuilt inside the image or must never be in it.
+
+# Build outputs — the image builds its own.
+**/bin/
+**/obj/
+**/node_modules/
+src/Amtarc.Web/wwwroot/css/site.css
+src/Amtarc.Web/wwwroot/js/site.js
+TestResults/
+
+# Secrets must never enter the build context: a COPY would bake them into a layer.
+.env
+.env.*
+!.env.example
+!.env.prod.example
+
+# Not needed to build or run.
+.git/
+.github/
+.vs/
+.vscode/
+.idea/
+docs/
+scripts/
+tests/
+*.md
+!README.md
+docker-compose*.yml
+.gitattributes
+.gitignore
+
+# Local uploads; the container gets a volume.
+src/Amtarc.Web/App_Data/
+
+.DS_Store
