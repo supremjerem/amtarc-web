@@ -40,7 +40,8 @@ public interface ISiteContentService
     Task<bool> ResetAsync(string key, CancellationToken cancellationToken = default);
 }
 
-public sealed class SiteContentService(AmtarcDbContext db, ILogger<SiteContentService> logger)
+public sealed class SiteContentService(
+    AmtarcDbContext db, IPublicPageCache cache, ILogger<SiteContentService> logger)
     : ISiteContentService
 {
     // camelCase because the stored JSON was written by the previous site with camelCase keys
@@ -113,6 +114,7 @@ public sealed class SiteContentService(AmtarcDbContext db, ILogger<SiteContentSe
         }
 
         await db.SaveChangesAsync(cancellationToken);
+        await cache.EvictContentAsync(cancellationToken);
     }
 
     public async Task<bool> ResetAsync(string key, CancellationToken cancellationToken = default)
@@ -125,6 +127,7 @@ public sealed class SiteContentService(AmtarcDbContext db, ILogger<SiteContentSe
 
         db.SiteContent.Remove(row);
         await db.SaveChangesAsync(cancellationToken);
+        await cache.EvictContentAsync(cancellationToken);
         return true;
     }
 

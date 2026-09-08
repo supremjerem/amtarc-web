@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Amtarc.Web.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -9,6 +10,7 @@ namespace Amtarc.Web.Data;
 /// host (which migrates + seeds on start). The connection string here is only used when a
 /// command actually talks to a database; <c>migrations add</c> / <c>script</c> do not.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "Only ever invoked by the dotnet-ef tooling.")]
 public sealed class AmtarcDbContextFactory : IDesignTimeDbContextFactory<AmtarcDbContext>
 {
     public AmtarcDbContext CreateDbContext(string[] args)

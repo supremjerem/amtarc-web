@@ -43,10 +43,15 @@ public sealed class AmtarcWebFactory : WebApplicationFactory<Program>, IAsyncLif
         builder.UseSetting("Admin:Password", AdminPassword);
         builder.UseSetting("Upload:Directory", _uploadsDirectory);
 
-        // Every test in the collection signs in from the same address, so the production throttle
-        // would lock the suite out partway through. The lockout itself is tested on its own host
-        // with a deliberately tiny limit.
-        builder.UseSetting("Security:LoginAttemptLimit", "10000");
+        // The whole collection runs from one address, so the production throttles would lock the
+        // suite out partway through. Both limits are tested on their own hosts with deliberately
+        // tiny values, which exercises the real code path rather than an environment special-case.
+        builder.UseSetting("Security:LoginAttemptLimit", "100000");
+        builder.UseSetting("Security:RequestLimit", "100000");
+
+        // Caching is opt-in per test: a cached public page would otherwise hide the writes the
+        // admin tests make. CacheTests uses its own host with the real expiry.
+        builder.UseSetting("Security:PublicCacheSeconds", "0");
     }
 
     /// <summary>A fresh scope + <see cref="AmtarcDbContext"/> for arranging or asserting DB state.</summary>

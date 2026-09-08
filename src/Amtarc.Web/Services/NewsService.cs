@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Amtarc.Web.Services;
 
-public sealed class NewsService(AmtarcDbContext db) : INewsService
+public sealed class NewsService(AmtarcDbContext db, IPublicPageCache cache) : INewsService
 {
     private readonly AmtarcDbContext _db = db;
 
@@ -51,6 +51,7 @@ public sealed class NewsService(AmtarcDbContext db) : INewsService
         // Prisma's @default(now()) did.
         _db.News.Add(item);
         await _db.SaveChangesAsync(cancellationToken);
+        await cache.EvictNewsAsync(cancellationToken);
 
         return item;
     }
@@ -74,6 +75,7 @@ public sealed class NewsService(AmtarcDbContext db) : INewsService
         item.Published = input.Published;
 
         await _db.SaveChangesAsync(cancellationToken);
+        await cache.EvictNewsAsync(cancellationToken);
         return true;
     }
 
@@ -87,6 +89,7 @@ public sealed class NewsService(AmtarcDbContext db) : INewsService
 
         _db.News.Remove(item);
         await _db.SaveChangesAsync(cancellationToken);
+        await cache.EvictNewsAsync(cancellationToken);
         return true;
     }
 
