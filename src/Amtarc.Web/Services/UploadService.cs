@@ -68,7 +68,6 @@ public sealed class UploadService(
         }
 
         var directory = ResolveDirectory();
-        System.IO.Directory.CreateDirectory(directory);
 
         // The name comes from the sniffed type and a fresh GUID, never from the client: a client
         // filename can carry a path, an extension the bytes contradict, or a name that collides
@@ -76,10 +75,22 @@ public sealed class UploadService(
         var fileName = $"{Guid.NewGuid():N}{extension}";
         var path = Path.Combine(directory, fileName);
 
-        await using (var file = File.Create(path))
+        try
         {
+            System.IO.Directory.CreateDirectory(directory);
+
+            await using var file = File.Create(path);
             await file.WriteAsync(header.AsMemory(0, read), cancellationToken);
             await content.CopyToAsync(file, cancellationToken);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // A volume restored from a backup can end up owned by the wrong user, and a disk can
+            // fill. Both are operational problems, not the admin's mistake — say so instead of
+            // handing them a 500 with no clue what to do.
+            logger.LogError(exception, "Could not write an upload to {Directory}.", directory);
+            return UploadResult.Failed(
+                "L'image n'a pas pu être enregistrée sur le serveur. Contactez l'administrateur.");
         }
 
         logger.LogInformation("Stored upload {FileName} ({Bytes} bytes).", fileName, length);

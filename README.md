@@ -114,6 +114,10 @@ Three volumes matter: `amtarc_site_db_data` (Postgres), `amtarc_uploads` (images
 `amtarc_site_keys` (the data-protection key ring). Losing the last one signs the admin out and
 invalidates every in-flight form on redeploy, so it is not optional.
 
+Deployment procedures live in [`docs/data-migration.md`](docs/data-migration.md) (moving the
+club's data off the old stack) and [`docs/cutover.md`](docs/cutover.md) (staging, parity check,
+Traefik switch, rollback).
+
 Significant decisions are recorded as ADRs in [`docs/adr/`](docs/adr):
 
 - [0001 — Rewrite the site as a single ASP.NET Core app](docs/adr/0001-rewrite-in-aspnet-core.md)
@@ -158,9 +162,10 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
 - [x] **Phase 8** — Three-stage Dockerfile (Node assets → .NET publish + EF migrations bundle →
       `aspnet` runtime as a non-root user), production `docker-compose.prod.yml` behind Traefik,
       and the GHCR publish pipeline gated on CI being green on `main`
-- [ ] **Phase 9** — Data migration from the old production database (news + editable content +
-      uploads)
-- [ ] **Phase 10** — Staging deploy, parity check against the live site, Traefik cutover
+- [x] **Phase 9** — Data-migration runbook ([`docs/data-migration.md`](docs/data-migration.md)),
+      rehearsed end to end against a copy of the old database
+- [ ] **Phase 10** — Staging deploy, parity check against the live site, Traefik cutover —
+      planned in [`docs/cutover.md`](docs/cutover.md); needs the DNS record and the VPS steps
 
 Tracked deviations from the project standards, to close later:
 
