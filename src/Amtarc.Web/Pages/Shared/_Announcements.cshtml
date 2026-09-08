@@ -12,7 +12,7 @@
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3" data-stagger="50">
             <div class="reveal relative overflow-hidden rounded-[24px] bg-gold-gradient-card p-9 md:col-span-2">
-                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#000000", Opacity = 0.09 }' />
+                <partial name="_HexagonPattern" model='new HexagonPatternModel { Color = "#000000", OpacityClass = "opacity-[0.09]" }' />
                 <div class="relative">
                     <div class="mb-[18px] inline-block rounded-pill bg-brand px-3 py-[5px] data-label text-gold">@Model.MedicalCertificate.Badge</div>
                     <h3 class="mb-2.5 display text-[27px] text-ink">@Model.MedicalCertificate.Title</h3>

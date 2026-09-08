@@ -53,6 +53,14 @@ dotnet run --project src/Amtarc.Web
   (see `.env.example`). Each start re-applies the password hash, so changing the value and
   restarting is how you rotate it.
 
+The app **refuses to start** if `Admin__Email` is not an address, or if `Admin__Password` is under
+12 characters or left at a placeholder (`change-me`, `password`, …). That is deliberate: a
+deployment that kept the example values is the realistic way this site ends up with a back-office
+anyone can log into, and a startup failure is the one check that cannot be skipped.
+
+`Security__PublicCacheSeconds=0` turns the public page's output cache off, which is convenient
+while working on the page locally.
+
 ## Scripts / common commands
 
 - `dotnet build -c Release` — build (warnings are errors)
@@ -106,8 +114,12 @@ Seeded from the rewrite plan. One PR per phase into `develop`.
       editable content sections driven by a ported field config (text / textarea / lines /
       schedule rows, all working without JavaScript), per-section reset to the defaults, and image
       upload validated by magic bytes and served from outside `wwwroot`
-- [ ] **Phase 6** — OutputCache + tag eviction, rate limiting, security headers, options validation
-      (refuse to boot on bad secrets)
+- [x] **Phase 6** — Hardening: OutputCache on the public page, evicted by tag from every write
+      (this replaces the old revalidation webhook and its shared secret); a global per-IP rate
+      limit alongside the sign-in one; forwarded-headers handling so the real client address is
+      what gets throttled behind Traefik; security headers with a CSP that needs no
+      `unsafe-inline`; and options validated at startup, so the app refuses to boot on a weak or
+      placeholder secret
 - [ ] **Phase 7** — Test consolidation + coverage floor in CI
 - [ ] **Phase 8** — Dockerfile (Node build stage → .NET publish → aspnet runtime), production
       `docker-compose.yml`, GHCR publish pipeline

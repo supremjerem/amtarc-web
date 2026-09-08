@@ -2,7 +2,7 @@
 @{
     var patternId = Amtarc.Web.Infrastructure.HexId.Next("hexagon-pattern");
 }
-<svg class="@Model.CssClass" style="opacity:@Model.Opacity.ToString(System.Globalization.CultureInfo.InvariantCulture)" aria-hidden="true">
+<svg class="@Model.CssClass @Model.OpacityClass" aria-hidden="true">
     <defs>
         <pattern id="@patternId" width="56" height="100" patternUnits="userSpaceOnUse">
             <path d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100" fill="none" stroke="@Model.Color" stroke-width="2" />
