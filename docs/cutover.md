@@ -67,6 +67,9 @@ side by side:
 - [ ] Hammering `/admin/login` produces the "trop de tentatives" message, distinct from a wrong
       password
 - [ ] `/healthz` returns 200; the container reports healthy
+- [ ] A monitor added in the Uptime Kuma already running on this VPS, pointed at
+      `https://<host>/healthz` — otherwise the first person to know the site is down is a club
+      member
 - [ ] Restart the container and confirm the admin session survives — that is the data-protection
       key ring being persisted
 - [ ] Lighthouse, compared against the live site
