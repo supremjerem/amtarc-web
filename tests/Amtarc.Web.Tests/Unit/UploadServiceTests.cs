@@ -138,6 +138,31 @@ public sealed class UploadServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task SaveAsync_ReportsAFailureRatherThanThrowing_WhenTheDirectoryCannotBeWritten()
+    {
+        // A volume restored from a backup can end up owned by the wrong user — that happened while
+        // rehearsing the production data migration, and it answered 500. A full disk looks the same
+        // to this code.
+        Directory.CreateDirectory(_directory);
+        await File.WriteAllTextAsync(Path.Combine(_directory, "blocker"), "not a directory");
+
+        var blocked = new UploadService(
+            MsOptions.Create(new UploadOptions
+            {
+                // A directory cannot be created under an existing file: the closest portable
+                // stand-in for an unwritable uploads directory.
+                Directory = Path.Combine(_directory, "blocker", "uploads"),
+            }),
+            new FakeEnvironment(),
+            NullLogger<UploadService>.Instance);
+
+        var result = await blocked.SaveAsync(new MemoryStream(Png), Png.Length);
+
+        result.Succeeded.Should().BeFalse();
+        result.Error.Should().Contain("administrateur");
+    }
+
+    [Fact]
     public async Task SaveAsync_ReturnsASiteRelativeUrlWhenNoBaseUrlIsConfigured()
     {
         var result = await CreateService().SaveAsync(new MemoryStream(Png), Png.Length);
