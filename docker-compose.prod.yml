@@ -75,8 +75,17 @@ networks:
     driver: bridge
 
 volumes:
-  # Distinct names from the old stack's amtarc_db_data / amtarc_api_uploads: both stacks coexist
-  # on this VPS until the cutover, and the old volumes are the rollback path.
+  # `name:` is pinned so these are the actual volume names on the host. Without it Compose
+  # prefixes them with the project (directory) name — the old stack's volumes really are called
+  # amtarc_amtarc_db_data and amtarc_amtarc_api_uploads — and the runbook's `docker run -v` then
+  # names a volume that does not exist. Docker creates an empty one rather than failing, so a
+  # restore would silently copy nothing.
+  #
+  # Distinct from the old stack's volumes: both stacks coexist on this VPS until the cutover,
+  # and the old volumes are the rollback path.
   amtarc_site_db_data:
+    name: amtarc_site_db_data
   amtarc_site_uploads:
+    name: amtarc_site_uploads
   amtarc_site_keys:
+    name: amtarc_site_keys

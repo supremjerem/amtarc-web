@@ -4,7 +4,7 @@ Runbook for phase 9 of the rewrite: getting the club's news, editable content an
 out of the Next.js + NestJS stack and into this one.
 
 **The old stack is never touched.** Everything here reads from it; nothing writes to it. Its
-database volume (`amtarc_db_data`) and uploads volume (`amtarc_api_uploads`) stay exactly as they
+database volume (`amtarc_amtarc_db_data`) and uploads volume (`amtarc_amtarc_api_uploads`) stay exactly as they
 are, which is what makes the rollback in [the cutover plan](#rollback) trivial.
 
 This procedure was rehearsed end to end against a copy of the old database before being written
@@ -81,15 +81,38 @@ is worse than none.
 
 ## 4. Copy the uploads
 
+The old stack's volumes carry a project prefix, because it was deployed from `~/apps/live/amtarc/`
+and Compose prefixes named volumes with the directory name. **Check the real name first** — this
+step is the one place where getting it wrong fails silently:
+
 ```bash
-docker run --rm \
-  -v amtarc_api_uploads:/from \
-  -v amtarc_site_uploads:/to \
-  alpine cp -a /from/. /to/
+docker volume ls --format '{{.Name}}' | grep -i amtarc
+# amtarc_amtarc_api_uploads   <- the old stack's uploads
+# amtarc_amtarc_db_data       <- the old stack's database
+# amtarc_site_uploads         <- the new stack's, pinned by `name:` in the compose file
+```
+
+`docker run -v <name>:/from` **creates an empty volume when `<name>` does not exist** instead of
+failing, so a typo here copies nothing at all and says nothing about it. Guard against that:
+
+```bash
+SRC=amtarc_amtarc_api_uploads   # confirm against the listing above
+DST=amtarc_site_uploads
+
+docker volume inspect "$SRC" >/dev/null || { echo "source volume $SRC not found"; exit 1; }
+before=$(docker run --rm -v "$SRC":/u alpine sh -c 'ls /u | wc -l')
+
+docker run --rm -v "$SRC":/from -v "$DST":/to alpine cp -a /from/. /to/
 
 # Required. See below.
-docker run --rm -v amtarc_site_uploads:/to alpine chown -R 1654:1654 /to
+docker run --rm -v "$DST":/to alpine chown -R 1654:1654 /to
+
+after=$(docker run --rm -v "$DST":/u alpine sh -c 'ls /u | wc -l')
+echo "$before file(s) in the source, $after in the destination"
 ```
+
+The two counts must match. If the source count is 0, check you named the right volume before
+concluding there are no images to move.
 
 **The `chown` is not optional.** The copy runs as root, which leaves the directory and its contents
 owned by root; the app runs as uid 1654 (`app`). Without it, existing images are still served —
