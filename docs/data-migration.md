@@ -84,11 +84,11 @@ is worse than none.
 ```bash
 docker run --rm \
   -v amtarc_api_uploads:/from \
-  -v amtarc_uploads:/to \
+  -v amtarc_site_uploads:/to \
   alpine cp -a /from/. /to/
 
 # Required. See below.
-docker run --rm -v amtarc_uploads:/to alpine chown -R 1654:1654 /to
+docker run --rm -v amtarc_site_uploads:/to alpine chown -R 1654:1654 /to
 ```
 
 **The `chown` is not optional.** The copy runs as root, which leaves the directory and its contents

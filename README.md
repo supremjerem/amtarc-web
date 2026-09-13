@@ -110,7 +110,7 @@ docker compose -f docker-compose.prod.yml up -d
 Images publish to `ghcr.io/<owner>/amtarc-site` — deliberately **not** `amtarc-web`, which is what
 the old Next.js repo publishes and what the currently-live stack pulls.
 
-Three volumes matter: `amtarc_site_db_data` (Postgres), `amtarc_uploads` (images), and
+Three volumes matter: `amtarc_site_db_data` (Postgres), `amtarc_site_uploads` (images), and
 `amtarc_site_keys` (the data-protection key ring). Losing the last one signs the admin out and
 invalidates every in-flight form on redeploy, so it is not optional.
 
