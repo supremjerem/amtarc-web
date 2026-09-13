@@ -71,10 +71,11 @@ public sealed class SiteContentService(
     public async Task<JsonObject> GetSectionAsync(
         string key, CancellationToken cancellationToken = default)
     {
-        var defaults = DefaultsNodeFor(key);
+        var section = Canonical(key);
+        var defaults = DefaultsNodeFor(section);
         var stored = await db.SiteContent
             .AsNoTracking()
-            .Where(row => row.Key == key)
+            .Where(row => row.Key == section)
             .Select(row => row.Data)
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -90,7 +91,7 @@ public sealed class SiteContentService(
         catch (JsonException exception)
         {
             logger.LogWarning(exception,
-                "Stored content for section {SectionKey} could not be parsed; using defaults.", key);
+                "Stored content for section {SectionKey} could not be parsed; using defaults.", section);
             return defaults;
         }
     }
@@ -98,15 +99,17 @@ public sealed class SiteContentService(
     public async Task UpsertAsync(
         string key, JsonObject data, CancellationToken cancellationToken = default)
     {
+        var section = Canonical(key);
+
         // Merging over the defaults before storing is what keeps the row's shape honest: fields
         // the code has dropped never get written back, and fields the form did not send keep
         // their default rather than disappearing.
-        var normalized = JsonMerge.Merge(DefaultsNodeFor(key), data)?.ToJsonString() ?? "{}";
+        var normalized = JsonMerge.Merge(DefaultsNodeFor(section), data)?.ToJsonString() ?? "{}";
 
-        var row = await db.SiteContent.SingleOrDefaultAsync(r => r.Key == key, cancellationToken);
+        var row = await db.SiteContent.SingleOrDefaultAsync(r => r.Key == section, cancellationToken);
         if (row is null)
         {
-            db.SiteContent.Add(new SiteContentEntry { Key = key, Data = normalized });
+            db.SiteContent.Add(new SiteContentEntry { Key = section, Data = normalized });
         }
         else
         {
@@ -119,7 +122,8 @@ public sealed class SiteContentService(
 
     public async Task<bool> ResetAsync(string key, CancellationToken cancellationToken = default)
     {
-        var row = await db.SiteContent.SingleOrDefaultAsync(r => r.Key == key, cancellationToken);
+        var section = Canonical(key);
+        var row = await db.SiteContent.SingleOrDefaultAsync(r => r.Key == section, cancellationToken);
         if (row is null)
         {
             return false;
@@ -130,6 +134,15 @@ public sealed class SiteContentService(
         await cache.EvictContentAsync(cancellationToken);
         return true;
     }
+
+    /// <summary>
+    /// Maps a caller-supplied key onto the matching <see cref="SectionKey"/> constant, or rejects
+    /// it. Everything downstream — the query, the log line — then works on a value that came from
+    /// this assembly rather than from a route, so a caller cannot steer either.
+    /// </summary>
+    private static string Canonical(string key) =>
+        SectionKey.All.FirstOrDefault(known => string.Equals(known, key, StringComparison.Ordinal))
+            ?? throw new ArgumentOutOfRangeException(nameof(key), key, "Unknown content section.");
 
     private static JsonObject DefaultsNodeFor(string key)
     {
