@@ -245,6 +245,23 @@ public sealed class AdminContentTests(AmtarcWebFactory factory) : IAsyncLifetime
         publicPage.Should().Contain(SiteContentDefaults.Hero.Badge);
     }
 
+    [Theory]
+    [InlineData("club-stats")]
+    [InlineData("hero\nINFO: forged log line")]
+    [InlineData("")]
+    public async Task AnUnknownSectionKey_IsRejected_RatherThanReachingTheQueryOrTheLog(string key)
+    {
+        // The key arrives from the route. Everything downstream works on the matching
+        // SectionKey constant instead, so a caller cannot steer the query or forge a log line.
+        await using var scope = _factory.CreateScope();
+        var content = scope.ServiceProvider.GetRequiredService<ISiteContentService>();
+
+        await FluentActions.Awaiting(() => content.GetSectionAsync(key))
+            .Should().ThrowAsync<ArgumentOutOfRangeException>();
+        await FluentActions.Awaiting(() => content.ResetAsync(key))
+            .Should().ThrowAsync<ArgumentOutOfRangeException>();
+    }
+
     [Fact]
     public async Task Reset_HandsTheSectionBackToTheBuiltInDefaults()
     {
